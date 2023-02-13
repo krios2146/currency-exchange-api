@@ -1,0 +1,4 @@
+db.url=jdbc:postgresql://localhost:5432/rest-api
+db.username=java
+db.password=java
+db.driver.name=org.postgresql.Driver
