@@ -1,4 +1,4 @@
-package pet.project.servlet.exchange.rate;
+package pet.project.servlet.exchange;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
