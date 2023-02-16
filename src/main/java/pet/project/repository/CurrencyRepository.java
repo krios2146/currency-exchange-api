@@ -29,7 +29,10 @@ public class CurrencyRepository implements CrudRepository<Currency> {
             statement.execute();
             ResultSet resultSet = statement.getResultSet();
 
-            return Optional.ofNullable(getCurrency(resultSet));
+            if (resultSet.next()) {
+                return Optional.of(getCurrency(resultSet));
+            }
+            return Optional.empty();
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
