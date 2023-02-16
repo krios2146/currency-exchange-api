@@ -21,10 +21,11 @@ public class ExchangeRepository implements CrudRepository<ExchangeRate> {
 
     @Override
     public Optional<ExchangeRate> findById(Long id) {
-        final String query = "SELECT * FROM exchange_rates WHERE id=" + id;
+        final String query = "SELECT * FROM exchange_rates WHERE id = ?";
 
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(query);
+            statement.setLong(1, id);
             statement.execute();
             ResultSet resultSet = statement.getResultSet();
 
@@ -94,11 +95,11 @@ public class ExchangeRepository implements CrudRepository<ExchangeRate> {
 
     @Override
     public void delete(Long id) {
-        final String query = "DELETE FROM exchange_rates WHERE id =" + id;
+        final String query = "DELETE FROM exchange_rates WHERE id = ?";
 
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(query);
-
+            statement.setLong(1, id);
             statement.execute();
 
         } catch (SQLException e) {
