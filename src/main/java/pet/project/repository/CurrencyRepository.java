@@ -21,10 +21,11 @@ public class CurrencyRepository implements CrudRepository<Currency> {
 
     @Override
     public Optional<Currency> findById(Long id) {
-        final String query = "SELECT * FROM currencies WHERE id=" + id;
+        final String query = "SELECT * FROM currencies WHERE id = ?";
 
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(query);
+            statement.setLong(1, id);
             statement.execute();
             ResultSet resultSet = statement.getResultSet();
 
@@ -94,11 +95,11 @@ public class CurrencyRepository implements CrudRepository<Currency> {
 
     @Override
     public void delete(Long id) {
-        final String query = "DELETE FROM currencies WHERE id =" + id;
+        final String query = "DELETE FROM currencies WHERE id = ?";
 
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(query);
-
+            statement.setLong(1, id);
             statement.execute();
 
         } catch (SQLException e) {
