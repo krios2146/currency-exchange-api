@@ -1,5 +1,6 @@
 package pet.project.repository;
 
+import pet.project.Utils;
 import pet.project.model.ExchangeRate;
 
 import javax.sql.DataSource;
@@ -14,6 +15,7 @@ import java.util.Optional;
 public class ExchangeRepository implements CrudRepository<ExchangeRate> {
 
     private final DataSource dataSource;
+    private final CurrencyRepository currencyRepository = new CurrencyRepository(Utils.getConfiguredDataSource());
 
     public ExchangeRepository(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -104,6 +106,36 @@ public class ExchangeRepository implements CrudRepository<ExchangeRate> {
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setLong(1, id);
             statement.execute();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Optional<ExchangeRate> findByCodes(String baseCurrencyCode, String targetCurrencyCode) {
+        final String query = "SELECT exchange_rates.id, exchange_rates.base_currency_id, " +
+                "exchange_rates.target_currency_id, exchange_rates.rate " +
+                "FROM exchange_rates " +
+                "JOIN currencies " +
+                "ON exchange_rates.base_currency_id = currencies.id " +
+                "WHERE exchange_rates.base_currency_id = ? AND " +
+                "exchange_rates.target_currency_id = ?";
+
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(query);
+            Long baseCurrencyId = currencyRepository.getByCode(baseCurrencyCode).get().getId();
+            Long targetCurrencyId = currencyRepository.getByCode(targetCurrencyCode).get().getId();
+
+            statement.setLong(1, baseCurrencyId);
+            statement.setLong(2, targetCurrencyId);
+            statement.execute();
+
+            ResultSet resultSet = statement.getResultSet();
+
+            if (resultSet.next()) {
+                return Optional.of(getExchangeRate(resultSet));
+            }
+            return Optional.empty();
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
