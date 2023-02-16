@@ -29,7 +29,10 @@ public class ExchangeRepository implements CrudRepository<ExchangeRate> {
             statement.execute();
             ResultSet resultSet = statement.getResultSet();
 
-            return Optional.ofNullable(getExchangeRate(resultSet));
+            if (resultSet.next()) {
+                return Optional.of(getExchangeRate(resultSet));
+            }
+            return Optional.empty();
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
