@@ -116,7 +116,7 @@ public class ExchangeRepository implements CrudRepository<ExchangeRate> {
                     resultSet.getDouble("rate")
             );
         } catch (SQLException e) {
-            return null;
+            throw new RuntimeException(e);
         }
     }
 }
