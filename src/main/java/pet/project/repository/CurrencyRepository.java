@@ -116,7 +116,7 @@ public class CurrencyRepository implements CrudRepository<Currency> {
                     resultSet.getString("symbol")
             );
         } catch (SQLException e) {
-            return null;
+            throw new RuntimeException(e);
         }
     }
 }
