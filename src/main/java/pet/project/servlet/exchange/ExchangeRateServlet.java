@@ -1,7 +1,6 @@
 package pet.project.servlet.exchange;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import pet.project.Utils;
 import pet.project.model.ExchangeRate;
 import pet.project.repository.ExchangeRepository;
 
@@ -15,7 +14,7 @@ import java.util.Optional;
 
 @WebServlet(name = "ExchangeRateServlet", urlPatterns = "/exchangeRate/*")
 public class ExchangeRateServlet extends HttpServlet {
-    private final ExchangeRepository exchangeRepository = new ExchangeRepository(Utils.getConfiguredDataSource());
+    private final ExchangeRepository exchangeRepository = new ExchangeRepository();
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -28,10 +27,12 @@ public class ExchangeRateServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // TODO: Validation of request
         String codes = req.getPathInfo().replaceAll("/", "").toUpperCase();
         String baseCurrencyCode = codes.substring(0, 3);
         String targetCurrencyCode = codes.substring(3);
 
+        // TODO: Check Optional
         Optional<ExchangeRate> exchangeRate = exchangeRepository.findByCodes(baseCurrencyCode, targetCurrencyCode);
 
         ObjectMapper objectMapper = new ObjectMapper();

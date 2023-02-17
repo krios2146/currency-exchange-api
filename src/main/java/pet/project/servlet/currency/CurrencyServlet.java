@@ -1,7 +1,6 @@
 package pet.project.servlet.currency;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import pet.project.Utils;
 import pet.project.model.Currency;
 import pet.project.repository.CurrencyRepository;
 
@@ -15,7 +14,7 @@ import java.util.Optional;
 
 @WebServlet(name = "CurrencyServlet", urlPatterns = "/currency/*")
 public class CurrencyServlet extends HttpServlet {
-    private final CurrencyRepository currencyRepository = new CurrencyRepository(Utils.getConfiguredDataSource());
+    private final CurrencyRepository currencyRepository = new CurrencyRepository();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
