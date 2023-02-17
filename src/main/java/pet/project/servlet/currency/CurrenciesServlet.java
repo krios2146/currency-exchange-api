@@ -26,6 +26,13 @@ public class CurrenciesServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp);
+        // TODO: Validate parameters
+        String name = req.getParameter("name");
+        String code = req.getParameter("code");
+        String symbol = req.getParameter("symbol");
+
+        Currency currency = new Currency(code, name, symbol);
+        // TODO: Check if already exists
+        currencyRepository.save(currency);
     }
 }
