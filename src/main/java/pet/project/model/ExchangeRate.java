@@ -9,6 +9,12 @@ public class ExchangeRate {
     public ExchangeRate() {
     }
 
+    public ExchangeRate(Currency baseCurrency, Currency targetCurrency, Double rate) {
+        this.baseCurrency = baseCurrency;
+        this.targetCurrency = targetCurrency;
+        this.rate = rate;
+    }
+
     public ExchangeRate(Long id, Currency baseCurrency, Currency targetCurrency, Double rate) {
         this.id = id;
         this.baseCurrency = baseCurrency;
