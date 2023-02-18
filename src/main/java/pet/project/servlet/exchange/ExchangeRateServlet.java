@@ -27,10 +27,16 @@ public class ExchangeRateServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // TODO: Validation of request
-        String codes = req.getPathInfo().replaceAll("/", "").toUpperCase();
-        String baseCurrencyCode = codes.substring(0, 3);
-        String targetCurrencyCode = codes.substring(3);
+        String url = req.getPathInfo().replaceAll("/", "");
+
+        if (url.length() != 6) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                    "Currency codes are either not provided or provided in an incorrect format");
+            return;
+        }
+
+        String baseCurrencyCode = url.substring(0, 3).toUpperCase();
+        String targetCurrencyCode = url.substring(3).toUpperCase();
 
         // TODO: Check Optional
         Optional<ExchangeRate> exchangeRate = exchangeRepository.findByCodes(baseCurrencyCode, targetCurrencyCode);
@@ -40,15 +46,33 @@ public class ExchangeRateServlet extends HttpServlet {
     }
 
     protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // TODO: Validation of request
-        String newExchangeRate = req.getReader().readLine().replace("rate=", "");
-        String codes = req.getPathInfo().replaceAll("/", "").toUpperCase();
-        String baseCurrencyCode = codes.substring(0, 3);
-        String targetCurrencyCode = codes.substring(3);
+        String url = req.getPathInfo().replaceAll("/", "");
+        if (url.length() != 6) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                    "Currency codes are either not provided or provided in an incorrect format");
+            return;
+        }
+
+        String parameter = req.getReader().readLine();
+        if (parameter == null || !parameter.contains("rate")) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing required parameter rate");
+            return;
+        }
+
+        String baseCurrencyCode = url.substring(0, 3).toUpperCase();
+        String targetCurrencyCode = url.substring(3).toUpperCase();
+        String paramValue = parameter.replace("rate=", "");
+
+        try {
+            Double.parseDouble(paramValue);
+        } catch (NumberFormatException e) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect value of rate parameter");
+            return;
+        }
 
         // TODO: Check Optional
         Optional<ExchangeRate> exchangeRateOptional = exchangeRepository.findByCodes(baseCurrencyCode, targetCurrencyCode);
-        exchangeRateOptional.get().setRate(Double.parseDouble(newExchangeRate));
+        exchangeRateOptional.get().setRate(Double.parseDouble(paramValue));
         exchangeRepository.update(exchangeRateOptional.get());
 
         doGet(req, resp);
