@@ -31,6 +31,7 @@ public class CurrencyServlet extends HttpServlet {
         Optional<Currency> currencyOptional = currencyRepository.findByCode(currencyCode);
         if (currencyOptional.isEmpty()) {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND, "There is no such currency in the database");
+            return;
         }
 
         ObjectMapper objectMapper = new ObjectMapper();
