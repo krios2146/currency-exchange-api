@@ -77,7 +77,7 @@ public class ExchangeRepository implements CrudRepository<ExchangeRate> {
     @Override
     public void update(ExchangeRate entity) {
         final String query = "UPDATE exchange_rates SET (base_currency_id, target_currency_id, rate) = (?, ?, ?)" +
-                "WHERE id =" + entity.getId();
+                "WHERE id = ?";
 
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(query);
@@ -85,6 +85,7 @@ public class ExchangeRepository implements CrudRepository<ExchangeRate> {
             statement.setLong(1, entity.getBaseCurrency().getId());
             statement.setLong(2, entity.getTargetCurrency().getId());
             statement.setDouble(3, entity.getRate());
+            statement.setLong(4, entity.getId());
 
             statement.execute();
 
