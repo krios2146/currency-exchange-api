@@ -28,10 +28,12 @@ public class CurrencyServlet extends HttpServlet {
 
         String currencyCode = url.toUpperCase();
 
-        // TODO: Check Optional
-        Optional<Currency> currency = currencyRepository.findByCode(currencyCode);
+        Optional<Currency> currencyOptional = currencyRepository.findByCode(currencyCode);
+        if (currencyOptional.isEmpty()) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "There is no such currency in the database");
+        }
 
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.writeValue(resp.getWriter(), currency.get());
+        objectMapper.writeValue(resp.getWriter(), currencyOptional.get());
     }
 }
