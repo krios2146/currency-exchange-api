@@ -27,9 +27,9 @@ currency to another.
 ## API features
 
 > **Note**
+> 
 > Examples of requests to
->
-API - [Postman](https://www.postman.com/aerospace-administrator-4834442/workspace/workspace/api/06f46d32-08bf-4daa-ae89-8a156ca58aa4)
+> API on [Postman](https://www.postman.com/aerospace-administrator-4834442/workspace/workspace/api/06f46d32-08bf-4daa-ae89-8a156ca58aa4)
 
 ## Currencies
 
@@ -51,7 +51,7 @@ Returns list of all currencies. Example of response:
     "code": "EUR",
     "sign": "€"
   },
-  ...
+  "..."
 ]
 ```
 
@@ -126,7 +126,7 @@ Returns list of all exchange rates. Example of response:
     },
     "rate": 22.16
   },
-  ...
+  "..."
 ]
 ```
 
