@@ -51,5 +51,8 @@ public class CurrenciesServlet extends HttpServlet {
 
         Currency currency = new Currency(code, name, symbol);
         currencyRepository.save(currency);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.writeValue(resp.getWriter(), currencyRepository.findByCode(code).get());
     }
 }
