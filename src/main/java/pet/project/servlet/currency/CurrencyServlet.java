@@ -18,10 +18,18 @@ public class CurrencyServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // TODO: Validation of path
-        String code = req.getPathInfo().replaceAll("/", "").toUpperCase();
+        String url = req.getPathInfo().replaceAll("/", "");
+
+        if (url.length() != 3) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                    "Currency code are either not provided or provided in an incorrect format");
+            return;
+        }
+
+        String currencyCode = url.toUpperCase();
+
         // TODO: Check Optional
-        Optional<Currency> currency = currencyRepository.findByCode(code);
+        Optional<Currency> currency = currencyRepository.findByCode(currencyCode);
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.writeValue(resp.getWriter(), currency.get());
