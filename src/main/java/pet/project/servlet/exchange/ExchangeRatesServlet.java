@@ -30,13 +30,13 @@ public class ExchangeRatesServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String baseCurrencyCode = req.getParameter("from");
-        String targetCurrencyCode = req.getParameter("to");
+        String baseCurrencyCode = req.getParameter("baseCurrencyCode");
+        String targetCurrencyCode = req.getParameter("targetCurrencyCode");
         String rate = req.getParameter("rate");
 
         if (baseCurrencyCode == null || targetCurrencyCode == null || rate == null ||
                 baseCurrencyCode.isBlank() || targetCurrencyCode.isBlank() || rate.isBlank()) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters: from, to or rate");
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters: baseCurrencyCode, targetCurrencyCode or rate");
             return;
         }
 
