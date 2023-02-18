@@ -29,10 +29,20 @@ public class ExchangeRatesServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // TODO: Validation of request
         String baseCurrencyCode = req.getParameter("from");
         String targetCurrencyCode = req.getParameter("to");
         String rate = req.getParameter("rate");
+
+        if (baseCurrencyCode == null || targetCurrencyCode == null || rate == null ||
+                baseCurrencyCode.isBlank() || targetCurrencyCode.isBlank() || rate.isBlank()) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters: from, to or rate");
+            return;
+        }
+
+        if (baseCurrencyCode.length() != 3 || targetCurrencyCode.length() != 3) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Currency codes must be in ISO 4217 format");
+            return;
+        }
 
         // TODO: Check if this rate is already present
         ExchangeRate exchangeRate = new ExchangeRate(
