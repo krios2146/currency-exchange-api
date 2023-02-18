@@ -31,7 +31,7 @@ currency to another.
 > Examples of requests to
 > API on [Postman](https://www.postman.com/aerospace-administrator-4834442/workspace/workspace/api/06f46d32-08bf-4daa-ae89-8a156ca58aa4)
 
-## Currencies
+### Currencies
 
 #### GET `/currencies`
 
@@ -86,7 +86,7 @@ fields are `name`, `code`, `symbol`. Example of response (inserted record):
 ]
 ```
 
-## Exchange rates
+### Exchange rates
 
 #### GET `/exchangeRates`
 
