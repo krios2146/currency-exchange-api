@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @WebServlet(name = "CurrenciesServlet", urlPatterns = "/currencies")
 public class CurrenciesServlet extends HttpServlet {
@@ -41,8 +42,14 @@ public class CurrenciesServlet extends HttpServlet {
             return;
         }
 
+        Optional<Currency> currencyOptional = currencyRepository.findByCode(code);
+        if (currencyOptional.isPresent()) {
+            resp.sendError(HttpServletResponse.SC_CONFLICT,
+                    "The currency you are trying to add already exists, id = " + currencyOptional.get().getId());
+            return;
+        }
+
         Currency currency = new Currency(code, name, symbol);
-        // TODO: Check if already exists
         currencyRepository.save(currency);
     }
 }
