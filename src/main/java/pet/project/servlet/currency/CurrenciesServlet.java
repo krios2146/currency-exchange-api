@@ -37,7 +37,7 @@ public class CurrenciesServlet extends HttpServlet {
         }
 
         if (code.length() != 3) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter code should be length of 3");
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Currency code must be in ISO 4217 format");
             return;
         }
 
