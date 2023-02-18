@@ -21,7 +21,7 @@ public class CurrencyServlet extends HttpServlet {
         // TODO: Validation of path
         String code = req.getPathInfo().replaceAll("/", "").toUpperCase();
         // TODO: Check Optional
-        Optional<Currency> currency = currencyRepository.getByCode(code);
+        Optional<Currency> currency = currencyRepository.findByCode(code);
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.writeValue(resp.getWriter(), currency.get());

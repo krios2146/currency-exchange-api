@@ -118,8 +118,8 @@ public class ExchangeRepository implements CrudRepository<ExchangeRate> {
 
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(query);
-            Long baseCurrencyId = currencyRepository.getByCode(baseCurrencyCode).get().getId();
-            Long targetCurrencyId = currencyRepository.getByCode(targetCurrencyCode).get().getId();
+            Long baseCurrencyId = currencyRepository.findByCode(baseCurrencyCode).get().getId();
+            Long targetCurrencyId = currencyRepository.findByCode(targetCurrencyCode).get().getId();
 
             statement.setLong(1, baseCurrencyId);
             statement.setLong(2, targetCurrencyId);

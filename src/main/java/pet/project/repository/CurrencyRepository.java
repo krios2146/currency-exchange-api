@@ -107,7 +107,7 @@ public class CurrencyRepository implements CrudRepository<Currency> {
         }
     }
 
-    public Optional<Currency> getByCode(String code) {
+    public Optional<Currency> findByCode(String code) {
         final String query = "SELECT * FROM currencies WHERE code = ?";
 
         try (Connection connection = dataSource.getConnection()) {
