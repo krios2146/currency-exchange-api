@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @WebServlet(name = "ExchangeRatesServlet", urlPatterns = "/exchangeRates")
@@ -44,17 +45,31 @@ public class ExchangeRatesServlet extends HttpServlet {
             return;
         }
 
-        // TODO: Check if this rate is already present
-        ExchangeRate exchangeRate = new ExchangeRate(
-                currencyRepository.findByCode(baseCurrencyCode).get(),
-                currencyRepository.findByCode(targetCurrencyCode).get(),
-                Double.parseDouble(rate)
-        );
-
-        exchangeRepository.save(exchangeRate);
         Optional<ExchangeRate> exchangeRateOptional = exchangeRepository.findByCodes(baseCurrencyCode, targetCurrencyCode);
+        if (exchangeRateOptional.isPresent()) {
+            resp.sendError(HttpServletResponse.SC_CONFLICT,
+                    "The exchange rate you are trying to add already exists, id = " + exchangeRateOptional.get().getId());
+            return;
+        }
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.writeValue(resp.getWriter(), exchangeRateOptional.get());
+        try {
+            ExchangeRate exchangeRateToAdd = new ExchangeRate(
+                    currencyRepository.findByCode(baseCurrencyCode).get(),
+                    currencyRepository.findByCode(targetCurrencyCode).get(),
+                    Double.parseDouble(rate)
+            );
+
+            exchangeRepository.save(exchangeRateToAdd);
+            ExchangeRate addedExchangeRate = exchangeRepository.findByCodes(baseCurrencyCode, targetCurrencyCode).get();
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.writeValue(resp.getWriter(), addedExchangeRate);
+
+        } catch (NumberFormatException e) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect value of rate parameter");
+        } catch (NoSuchElementException e) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND,
+                    "One or both currencies for which you are trying to add an exchange rate does not exist in the database");
+        }
     }
 }
