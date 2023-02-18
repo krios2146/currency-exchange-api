@@ -26,10 +26,20 @@ public class CurrenciesServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // TODO: Validate parameters
         String name = req.getParameter("name");
         String code = req.getParameter("code");
         String symbol = req.getParameter("symbol");
+
+        if (name == null || code == null || symbol == null ||
+                name.isBlank() || code.isBlank() || symbol.isBlank()) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters: name, code or symbol");
+            return;
+        }
+
+        if (code.length() != 3) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter code should be length of 3");
+            return;
+        }
 
         Currency currency = new Currency(code, name, symbol);
         // TODO: Check if already exists
