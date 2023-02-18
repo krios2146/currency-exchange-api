@@ -21,10 +21,10 @@ public class ExchangeServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String baseCurrencyCode = req.getParameter("from");
         String targetCurrencyCode = req.getParameter("to");
-        String amount = req.getParameter("amount");
+        String amountToConvertParam = req.getParameter("amount");
 
-        if (baseCurrencyCode == null || targetCurrencyCode == null || amount == null ||
-                baseCurrencyCode.isBlank() || targetCurrencyCode.isBlank() || amount.isBlank()) {
+        if (baseCurrencyCode == null || targetCurrencyCode == null || amountToConvertParam == null ||
+                baseCurrencyCode.isBlank() || targetCurrencyCode.isBlank() || amountToConvertParam.isBlank()) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters: from, to or amount");
             return;
         }
@@ -34,16 +34,30 @@ public class ExchangeServlet extends HttpServlet {
             return;
         }
 
-        // TODO: Check Optional
-        Optional<ExchangeRate> exchangeRate = exchangeRepository.findByCodes(baseCurrencyCode, targetCurrencyCode);
-        double currencyExchangeRate = exchangeRate.get().getRate();
-        double convertedAmount = Double.parseDouble(amount) * currencyExchangeRate;
+        Optional<ExchangeRate> exchangeRateOptional = exchangeRepository.findByCodes(baseCurrencyCode, targetCurrencyCode);
+        if (exchangeRateOptional.isEmpty()) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Exchange rate for this pair of currency does not exist");
+            return;
+        }
+
+        ExchangeRate exchangeRate = exchangeRateOptional.get();
+
+        double currencyExchangeRate = exchangeRate.getRate();
+        double amountToConvert;
+        try {
+            amountToConvert = Double.parseDouble(amountToConvertParam);
+        } catch (NumberFormatException e) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect value of amount parameter");
+            return;
+        }
+
+        double convertedAmount = amountToConvert * currencyExchangeRate;
 
         ExchangeResponse response = new ExchangeResponse(
-                exchangeRate.get().getBaseCurrency(),
-                exchangeRate.get().getTargetCurrency(),
+                exchangeRate.getBaseCurrency(),
+                exchangeRate.getTargetCurrency(),
                 currencyExchangeRate,
-                Double.parseDouble(amount),
+                amountToConvert,
                 convertedAmount
         );
 
