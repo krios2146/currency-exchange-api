@@ -38,11 +38,14 @@ public class ExchangeRateServlet extends HttpServlet {
         String baseCurrencyCode = url.substring(0, 3).toUpperCase();
         String targetCurrencyCode = url.substring(3).toUpperCase();
 
-        // TODO: Check Optional
-        Optional<ExchangeRate> exchangeRate = exchangeRepository.findByCodes(baseCurrencyCode, targetCurrencyCode);
+        Optional<ExchangeRate> exchangeRateOptional = exchangeRepository.findByCodes(baseCurrencyCode, targetCurrencyCode);
+        if (exchangeRateOptional.isEmpty()) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "There is no exchange rate for this currency pair");
+            return;
+        }
 
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.writeValue(resp.getWriter(), exchangeRate.get());
+        objectMapper.writeValue(resp.getWriter(), exchangeRateOptional.get());
     }
 
     protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -61,21 +64,21 @@ public class ExchangeRateServlet extends HttpServlet {
 
         String baseCurrencyCode = url.substring(0, 3).toUpperCase();
         String targetCurrencyCode = url.substring(3).toUpperCase();
-        String paramValue = parameter.replace("rate=", "");
+        String paramRateValue = parameter.replace("rate=", "");
 
-        try {
-            Double.parseDouble(paramValue);
-        } catch (NumberFormatException e) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect value of rate parameter");
+        Optional<ExchangeRate> exchangeRateToUpdateOptional = exchangeRepository.findByCodes(baseCurrencyCode, targetCurrencyCode);
+        if (exchangeRateToUpdateOptional.isEmpty()) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "There is no exchange rate for this currency pair");
             return;
         }
 
-        // TODO: Check Optional
-        Optional<ExchangeRate> exchangeRateOptional = exchangeRepository.findByCodes(baseCurrencyCode, targetCurrencyCode);
-        exchangeRateOptional.get().setRate(Double.parseDouble(paramValue));
-        exchangeRepository.update(exchangeRateOptional.get());
-
-        doGet(req, resp);
+        ExchangeRate exchangeRateToUpdate = exchangeRateToUpdateOptional.get();
+        try {
+            exchangeRateToUpdate.setRate(Double.parseDouble(paramRateValue));
+            exchangeRepository.update(exchangeRateToUpdate);
+            doGet(req, resp);
+        } catch (NumberFormatException e) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect value of rate parameter");
+        }
     }
-
 }
