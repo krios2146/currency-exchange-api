@@ -40,7 +40,18 @@ public class ExchangeRateServlet extends HttpServlet {
     }
 
     protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp);
+        // TODO: Validation of request
+        String newExchangeRate = req.getReader().readLine().replace("rate=", "");
+        String codes = req.getPathInfo().replaceAll("/", "").toUpperCase();
+        String baseCurrencyCode = codes.substring(0, 3);
+        String targetCurrencyCode = codes.substring(3);
+
+        // TODO: Check Optional
+        Optional<ExchangeRate> exchangeRateOptional = exchangeRepository.findByCodes(baseCurrencyCode, targetCurrencyCode);
+        exchangeRateOptional.get().setRate(Double.parseDouble(newExchangeRate));
+        exchangeRepository.update(exchangeRateOptional.get());
+
+        doGet(req, resp);
     }
 
 }
