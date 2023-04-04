@@ -4,22 +4,22 @@ public class Currency {
     private Long id;
     private String code;
     private String fullName;
-    private String symbol;
+    private String sign;
 
     public Currency() {
     }
 
-    public Currency(String code, String fullName, String symbol) {
+    public Currency(String code, String fullName, String sign) {
         this.code = code;
         this.fullName = fullName;
-        this.symbol = symbol;
+        this.sign = sign;
     }
 
-    public Currency(Long id, String code, String fullName, String symbol) {
+    public Currency(Long id, String code, String fullName, String sign) {
         this.id = id;
         this.code = code;
         this.fullName = fullName;
-        this.symbol = symbol;
+        this.sign = sign;
     }
 
     public Long getId() {
@@ -46,11 +46,11 @@ public class Currency {
         this.fullName = fullName;
     }
 
-    public String getSymbol() {
-        return symbol;
+    public String getSign() {
+        return sign;
     }
 
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
+    public void setSign(String sign) {
+        this.sign = sign;
     }
 }

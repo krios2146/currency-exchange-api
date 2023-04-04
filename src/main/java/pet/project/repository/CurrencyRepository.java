@@ -65,7 +65,7 @@ public class CurrencyRepository implements CrudRepository<Currency> {
 
             statement.setString(1, entity.getCode());
             statement.setString(2, entity.getFullName());
-            statement.setString(3, entity.getSymbol());
+            statement.setString(3, entity.getSign());
 
             statement.execute();
 
@@ -84,7 +84,7 @@ public class CurrencyRepository implements CrudRepository<Currency> {
 
             statement.setString(1, entity.getCode());
             statement.setString(2, entity.getFullName());
-            statement.setString(3, entity.getSymbol());
+            statement.setString(3, entity.getSign());
 
             statement.execute();
 
