@@ -1,7 +1,7 @@
 package pet.project.repository;
 
 import pet.project.model.ExchangeRate;
-import pet.project.utils.ConfiguredPGSimpleDataSource;
+import pet.project.utils.ConfiguredDataSource;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class ExchangeRepository implements CrudRepository<ExchangeRate> {
-    private final DataSource dataSource = ConfiguredPGSimpleDataSource.getInstance();
+    private final DataSource dataSource = ConfiguredDataSource.getInstance();
     private final CurrencyRepository currencyRepository = new CurrencyRepository();
 
     @Override

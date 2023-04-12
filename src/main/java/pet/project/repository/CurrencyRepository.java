@@ -1,7 +1,7 @@
 package pet.project.repository;
 
 import pet.project.model.Currency;
-import pet.project.utils.ConfiguredPGSimpleDataSource;
+import pet.project.utils.ConfiguredDataSource;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public class CurrencyRepository implements CrudRepository<Currency> {
 
-    private final DataSource dataSource = ConfiguredPGSimpleDataSource.getInstance();
+    private final DataSource dataSource = ConfiguredDataSource.getInstance();
 
     @Override
     public Optional<Currency> findById(Long id) {

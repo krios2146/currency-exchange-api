@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 
-public class ConfiguredPGSimpleDataSource {
+public class ConfiguredDataSource {
     private static final PGSimpleDataSource INSTANCE = new PGSimpleDataSource();
 
     static {
@@ -24,7 +24,7 @@ public class ConfiguredPGSimpleDataSource {
         }
     }
 
-    private ConfiguredPGSimpleDataSource() {
+    private ConfiguredDataSource() {
     }
 
     public static PGSimpleDataSource getInstance() {
