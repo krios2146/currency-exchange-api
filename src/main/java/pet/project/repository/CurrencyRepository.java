@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class CurrencyRepository implements CrudRepository<Currency> {
-
     private final DataSource dataSource = ConfiguredDataSource.getInstance();
 
     @Override
@@ -76,8 +75,7 @@ public class CurrencyRepository implements CrudRepository<Currency> {
 
     @Override
     public void update(Currency entity) {
-        final String query = "UPDATE currencies SET (code, full_name, symbol) = (?, ?, ?)" +
-                "WHERE id =" + entity.getId();
+        final String query = "UPDATE currencies SET (code, full_name, symbol) = (?, ?, ?) WHERE id = ?";
 
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(query);
@@ -85,6 +83,7 @@ public class CurrencyRepository implements CrudRepository<Currency> {
             statement.setString(1, entity.getCode());
             statement.setString(2, entity.getFullName());
             statement.setString(3, entity.getSign());
+            statement.setLong(4, entity.getId());
 
             statement.execute();
 
