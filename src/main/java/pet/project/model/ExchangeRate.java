@@ -1,21 +1,23 @@
 package pet.project.model;
 
+import java.math.BigDecimal;
+
 public class ExchangeRate {
     private Long id;
     private Currency baseCurrency;
     private Currency targetCurrency;
-    private Double rate;
+    private BigDecimal rate;
 
     public ExchangeRate() {
     }
 
-    public ExchangeRate(Currency baseCurrency, Currency targetCurrency, Double rate) {
+    public ExchangeRate(Currency baseCurrency, Currency targetCurrency, BigDecimal rate) {
         this.baseCurrency = baseCurrency;
         this.targetCurrency = targetCurrency;
         this.rate = rate;
     }
 
-    public ExchangeRate(Long id, Currency baseCurrency, Currency targetCurrency, Double rate) {
+    public ExchangeRate(Long id, Currency baseCurrency, Currency targetCurrency, BigDecimal rate) {
         this.id = id;
         this.baseCurrency = baseCurrency;
         this.targetCurrency = targetCurrency;
@@ -46,11 +48,11 @@ public class ExchangeRate {
         this.targetCurrency = targetCurrency;
     }
 
-    public Double getRate() {
+    public BigDecimal getRate() {
         return rate;
     }
 
-    public void setRate(Double rate) {
+    public void setRate(BigDecimal rate) {
         this.rate = rate;
     }
 }
