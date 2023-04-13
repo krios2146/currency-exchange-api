@@ -1,13 +1,15 @@
 package pet.project.model;
 
+import java.math.BigDecimal;
+
 public class ExchangeResponse {
     private Currency baseCurrency;
     private Currency targetCurrency;
-    private Double rate;
-    private Double amount;
-    private Double convertedAmount;
+    private BigDecimal rate;
+    private BigDecimal amount;
+    private BigDecimal convertedAmount;
 
-    public ExchangeResponse(Currency baseCurrency, Currency targetCurrency, Double rate, Double amount, Double convertedAmount) {
+    public ExchangeResponse(Currency baseCurrency, Currency targetCurrency, BigDecimal rate, BigDecimal amount, BigDecimal convertedAmount) {
         this.baseCurrency = baseCurrency;
         this.targetCurrency = targetCurrency;
         this.rate = rate;
@@ -31,27 +33,27 @@ public class ExchangeResponse {
         this.targetCurrency = targetCurrency;
     }
 
-    public Double getRate() {
+    public BigDecimal getRate() {
         return rate;
     }
 
-    public void setRate(Double rate) {
+    public void setRate(BigDecimal rate) {
         this.rate = rate;
     }
 
-    public Double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
-    public Double getConvertedAmount() {
+    public BigDecimal getConvertedAmount() {
         return convertedAmount;
     }
 
-    public void setConvertedAmount(Double convertedAmount) {
+    public void setConvertedAmount(BigDecimal convertedAmount) {
         this.convertedAmount = convertedAmount;
     }
 }
