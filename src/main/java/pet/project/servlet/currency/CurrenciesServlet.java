@@ -32,9 +32,18 @@ public class CurrenciesServlet extends HttpServlet {
         String code = req.getParameter("code");
         String symbol = req.getParameter("symbol");
 
-        if (name == null || code == null || symbol == null ||
-                name.isBlank() || code.isBlank() || symbol.isBlank()) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters: name, code or symbol");
+        if (name == null || name.isBlank()) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter - name");
+            return;
+        }
+
+        if (code == null || code.isBlank()) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter - code");
+            return;
+        }
+
+        if (symbol == null || symbol.isBlank()) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters - symbol");
             return;
         }
 
