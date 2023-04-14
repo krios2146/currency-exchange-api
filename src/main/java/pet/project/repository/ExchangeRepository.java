@@ -1,5 +1,6 @@
 package pet.project.repository;
 
+import pet.project.model.Currency;
 import pet.project.model.ExchangeRate;
 import pet.project.utils.ConfiguredDataSource;
 
@@ -14,7 +15,6 @@ import java.util.Optional;
 
 public class ExchangeRepository implements CrudRepository<ExchangeRate> {
     private final DataSource dataSource = ConfiguredDataSource.getInstance();
-    private final CurrencyRepository currencyRepository = new CurrencyRepository();
 
     @Override
     public Optional<ExchangeRate> findById(Long id) {
@@ -189,12 +189,22 @@ public class ExchangeRepository implements CrudRepository<ExchangeRate> {
         }
     }
 
-    private ExchangeRate getExchangeRate(ResultSet resultSet) {
+    private static ExchangeRate getExchangeRate(ResultSet resultSet) {
         try {
             return new ExchangeRate(
                     resultSet.getLong("id"),
-                    currencyRepository.findById(resultSet.getLong("base_currency_id")).get(),
-                    currencyRepository.findById(resultSet.getLong("target_currency_id")).get(),
+                    new Currency(
+                        resultSet.getLong("base_id"),
+                        resultSet.getString("base_id"),
+                        resultSet.getString("base_id"),
+                        resultSet.getString("base_id")
+                    ),
+                    new Currency(
+                        resultSet.getLong("target_id"),
+                        resultSet.getString("target_id"),
+                        resultSet.getString("target_id"),
+                        resultSet.getString("target_id")
+                    ),
                     resultSet.getBigDecimal("rate")
             );
         } catch (SQLException e) {
