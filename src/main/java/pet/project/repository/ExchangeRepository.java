@@ -18,7 +18,25 @@ public class ExchangeRepository implements CrudRepository<ExchangeRate> {
 
     @Override
     public Optional<ExchangeRate> findById(Long id) {
-        final String query = "SELECT * FROM exchange_rates WHERE id = ?";
+        // @formatter:off
+        final String query =
+            """
+                SELECT
+                    er.id AS id,
+                    bc.id AS base_id,
+                    bc.code AS base_code,
+                    bc.full_name AS base_name,
+                    bc.sign AS base_sign,
+                    tc.id AS target_id,
+                    tc.code AS target_code,
+                    tc.full_name AS target_name,
+                    tc.sign AS target_sign,
+                    er.rate AS rate
+                FROM exchange_rates er
+                JOIN currency bc ON er.base_currency_id = bc.id
+                JOIN currency tc ON er.target_currency_id = tc.id
+                WHERE er.id = ?
+            """;
 
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(query);
@@ -38,7 +56,24 @@ public class ExchangeRepository implements CrudRepository<ExchangeRate> {
 
     @Override
     public List<ExchangeRate> findAll() {
-        final String query = "SELECT * FROM exchange_rates";
+        // @formatter:off
+        final String query =
+            """
+                SELECT
+                    er.id AS id,
+                    bc.id AS base_id,
+                    bc.code AS base_code,
+                    bc.full_name AS base_name,
+                    bc.sign AS base_sign,
+                    tc.id AS target_id,
+                    tc.code AS target_code,
+                    tc.full_name AS target_name,
+                    tc.sign AS target_sign,
+                    er.rate AS rate
+                FROM exchange_rates er
+                JOIN currency bc ON er.base_currency_id = bc.id
+                JOIN currency tc ON er.target_currency_id = tc.id
+            """;
 
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(query);
