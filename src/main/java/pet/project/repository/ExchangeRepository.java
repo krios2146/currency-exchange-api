@@ -65,7 +65,7 @@ public class ExchangeRepository implements CrudRepository<ExchangeRate> {
 
             statement.setLong(1, entity.getBaseCurrency().getId());
             statement.setLong(2, entity.getTargetCurrency().getId());
-            statement.setDouble(3, entity.getRate());
+            statement.setBigDecimal(3, entity.getRate());
 
             statement.execute();
 
@@ -84,7 +84,7 @@ public class ExchangeRepository implements CrudRepository<ExchangeRate> {
 
             statement.setLong(1, entity.getBaseCurrency().getId());
             statement.setLong(2, entity.getTargetCurrency().getId());
-            statement.setDouble(3, entity.getRate());
+            statement.setBigDecimal(3, entity.getRate());
             statement.setLong(4, entity.getId());
 
             statement.execute();
@@ -144,7 +144,7 @@ public class ExchangeRepository implements CrudRepository<ExchangeRate> {
                     resultSet.getLong("id"),
                     currencyRepository.findById(resultSet.getLong("base_currency_id")).get(),
                     currencyRepository.findById(resultSet.getLong("target_currency_id")).get(),
-                    resultSet.getDouble("rate")
+                    resultSet.getBigDecimal("rate")
             );
         } catch (SQLException e) {
             throw new RuntimeException(e);
