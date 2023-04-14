@@ -191,6 +191,53 @@ public class ExchangeRepository implements CrudRepository<ExchangeRate> {
         }
     }
 
+    // may be naming is not good enough
+    public List<ExchangeRate> findByCodesWithUsdBase(String baseCurrencyCode, String targetCurrencyCode) {
+        // @formatter:off
+        final String query =
+                """
+                    SELECT
+                        er.id AS id,
+                        bc.id AS base_id,
+                        bc.code AS base_code,
+                        bc.full_name AS base_name,
+                        bc.sign AS base_sign,
+                        tc.id AS target_id,
+                        tc.code AS target_code,
+                        tc.full_name AS target_name,
+                        tc.sign AS target_sign,
+                        er.rate AS rate
+                    FROM exchange_rates er
+                    JOIN currency bc ON er.base_currency_id = bc.id
+                    JOIN currency tc ON er.target_currency_id = tc.id
+                    WHERE (
+                        base_currency_id = (SELECT c.id FROM currency c WHERE c.code = 'USD') AND
+                        target_currency_id = (SELECT c2.id FROM currency c2 WHERE c2.code = ?) OR
+                        target_currency_id = (SELECT c3.id FROM currency c3 WHERE c3.code = ?)
+                    )
+                """;
+
+        // @formatter:on
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(query);
+
+            statement.setString(1, baseCurrencyCode);
+            statement.setString(2, targetCurrencyCode);
+            statement.execute();
+
+            ResultSet resultSet = statement.getResultSet();
+
+            List<ExchangeRate> exchangeRatesList = new ArrayList<>();
+            while (resultSet.next()) {
+                exchangeRatesList.add(getExchangeRate(resultSet));
+            }
+            return exchangeRatesList;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static ExchangeRate getExchangeRate(ResultSet resultSet) {
         try {
             return new ExchangeRate(
