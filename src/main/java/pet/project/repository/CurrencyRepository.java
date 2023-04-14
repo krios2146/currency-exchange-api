@@ -25,10 +25,11 @@ public class CurrencyRepository implements CrudRepository<Currency> {
             statement.execute();
             ResultSet resultSet = statement.getResultSet();
 
-            if (resultSet.next()) {
-                return Optional.of(getCurrency(resultSet));
+            if (!resultSet.next()) {
+                return Optional.empty();
             }
-            return Optional.empty();
+
+            return Optional.of(getCurrency(resultSet));
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -115,10 +116,11 @@ public class CurrencyRepository implements CrudRepository<Currency> {
             statement.execute();
             ResultSet resultSet = statement.getResultSet();
 
-            if (resultSet.next()) {
-                return Optional.of(getCurrency(resultSet));
+            if (!resultSet.next()) {
+                return Optional.empty();
             }
-            return Optional.empty();
+
+            return Optional.of(getCurrency(resultSet));
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
