@@ -112,21 +112,34 @@ public class ExchangeRepository implements CrudRepository<ExchangeRate> {
     }
 
     public Optional<ExchangeRate> findByCodes(String baseCurrencyCode, String targetCurrencyCode) {
-        final String query = "SELECT exchange_rates.id, exchange_rates.base_currency_id, " +
-                "exchange_rates.target_currency_id, exchange_rates.rate " +
-                "FROM exchange_rates " +
-                "JOIN currencies " +
-                "ON exchange_rates.base_currency_id = currencies.id " +
-                "WHERE exchange_rates.base_currency_id = ? AND " +
-                "exchange_rates.target_currency_id = ?";
+        // @formatter:off
+        final String query =
+            """
+                SELECT
+                    er.id AS id,
+                    bc.id AS base_id,
+                    bc.code AS base_code,
+                    bc.full_name AS base_name,
+                    bc.sign AS base_sign,
+                    tc.id AS target_id,
+                    tc.code AS target_code,
+                    tc.full_name AS target_name,
+                    tc.sign AS target_sign,
+                    er.rate AS rate
+                FROM exchange_rates er
+                JOIN currency bc ON er.base_currency_id = bc.id
+                JOIN currency tc ON er.target_currency_id = tc.id
+                WHERE (
+                    base_currency_id = (SELECT c.id FROM currency c WHERE c.code = ?) AND
+                    target_currency_id = (SELECT c2.id FROM currency c2 WHERE c2.code = ?)
+                )
+            """;
 
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(query);
-            Long baseCurrencyId = currencyRepository.findByCode(baseCurrencyCode).get().getId();
-            Long targetCurrencyId = currencyRepository.findByCode(targetCurrencyCode).get().getId();
 
-            statement.setLong(1, baseCurrencyId);
-            statement.setLong(2, targetCurrencyId);
+            statement.setString(1, baseCurrencyCode);
+            statement.setString(2, targetCurrencyCode);
             statement.execute();
 
             ResultSet resultSet = statement.getResultSet();
