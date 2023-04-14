@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import pet.project.model.Currency;
 import pet.project.repository.CurrencyRepository;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +17,7 @@ public class CurrenciesServlet extends HttpServlet {
     private final CurrencyRepository currencyRepository = new CurrencyRepository();
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         List<Currency> currencyList = currencyRepository.findAll();
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -26,7 +25,7 @@ public class CurrenciesServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String name = req.getParameter("name");
         String code = req.getParameter("code");
         String symbol = req.getParameter("symbol");
