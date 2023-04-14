@@ -44,10 +44,11 @@ public class ExchangeRepository implements CrudRepository<ExchangeRate> {
             statement.execute();
             ResultSet resultSet = statement.getResultSet();
 
-            if (resultSet.next()) {
-                return Optional.of(getExchangeRate(resultSet));
+            if (!resultSet.next()) {
+                return Optional.empty();
             }
-            return Optional.empty();
+
+            return Optional.of(getExchangeRate(resultSet));
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -179,10 +180,11 @@ public class ExchangeRepository implements CrudRepository<ExchangeRate> {
 
             ResultSet resultSet = statement.getResultSet();
 
-            if (resultSet.next()) {
-                return Optional.of(getExchangeRate(resultSet));
+            if (!resultSet.next()) {
+                return Optional.empty();
             }
-            return Optional.empty();
+
+            return Optional.of(getExchangeRate(resultSet));
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
