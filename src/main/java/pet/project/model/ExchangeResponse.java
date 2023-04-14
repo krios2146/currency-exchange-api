@@ -11,8 +11,12 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class ExchangeResponse {
     private Currency baseCurrency;
+
     private Currency targetCurrency;
+
     private BigDecimal rate;
+
     private BigDecimal amount;
+
     private BigDecimal convertedAmount;
 }
