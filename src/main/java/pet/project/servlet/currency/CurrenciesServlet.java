@@ -36,12 +36,10 @@ public class CurrenciesServlet extends HttpServlet {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter - name");
             return;
         }
-
         if (code == null || code.isBlank()) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter - code");
             return;
         }
-
         if (symbol == null || symbol.isBlank()) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters - symbol");
             return;
@@ -53,9 +51,12 @@ public class CurrenciesServlet extends HttpServlet {
         }
 
         Optional<Currency> currencyOptional = currencyRepository.findByCode(code);
+
         if (currencyOptional.isPresent()) {
-            resp.sendError(HttpServletResponse.SC_CONFLICT,
-                    "The currency you are trying to add already exists, id = " + currencyOptional.get().getId());
+            resp.sendError(
+                    HttpServletResponse.SC_CONFLICT,
+                    "The currency you are trying to add already exists, id = " + currencyOptional.get().getId()
+            );
             return;
         }
 
