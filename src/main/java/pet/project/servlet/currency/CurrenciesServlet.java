@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import static pet.project.utils.Validation.isValidCurrencyCode;
+
 @WebServlet(name = "CurrenciesServlet", urlPatterns = "/currencies")
 public class CurrenciesServlet extends HttpServlet {
     private final CurrencyRepository currencyRepository = new CurrencyRepository();
@@ -36,7 +38,7 @@ public class CurrenciesServlet extends HttpServlet {
             return;
         }
 
-        if (code.length() != 3) {
+        if (!isValidCurrencyCode(code)) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Currency code must be in ISO 4217 format");
             return;
         }

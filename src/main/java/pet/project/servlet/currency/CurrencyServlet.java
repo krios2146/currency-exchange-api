@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
+import static pet.project.utils.Validation.isValidCurrencyCode;
+
 @WebServlet(name = "CurrencyServlet", urlPatterns = "/currency/*")
 public class CurrencyServlet extends HttpServlet {
     private final CurrencyRepository currencyRepository = new CurrencyRepository();
@@ -19,9 +21,8 @@ public class CurrencyServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String code = req.getPathInfo().replaceAll("/", "");
 
-        if (code.length() != 3) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
-                    "Currency code are either not provided or provided in an incorrect format");
+        if (!isValidCurrencyCode(code)) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Currency code must be in ISO 4217 format");
             return;
         }
 
