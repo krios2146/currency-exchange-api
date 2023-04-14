@@ -38,6 +38,7 @@ public class ExchangeRepository implements CrudRepository<ExchangeRate> {
                 WHERE er.id = ?
             """;
 
+        // @formatter:on
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setLong(1, id);
@@ -76,6 +77,7 @@ public class ExchangeRepository implements CrudRepository<ExchangeRate> {
                 JOIN currency tc ON er.target_currency_id = tc.id
             """;
 
+        // @formatter:on
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(query);
             statement.execute();
@@ -118,6 +120,7 @@ public class ExchangeRepository implements CrudRepository<ExchangeRate> {
                 "SET (base_currency_id, target_currency_id, rate) = (?, ?, ?)" +
                 "WHERE id = ?";
 
+        // @formatter:on
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(query);
 
@@ -171,6 +174,7 @@ public class ExchangeRepository implements CrudRepository<ExchangeRate> {
                 )
             """;
 
+        // @formatter:on
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(query);
 
@@ -243,16 +247,16 @@ public class ExchangeRepository implements CrudRepository<ExchangeRate> {
             return new ExchangeRate(
                     resultSet.getLong("id"),
                     new Currency(
-                        resultSet.getLong("base_id"),
-                        resultSet.getString("base_id"),
-                        resultSet.getString("base_id"),
-                        resultSet.getString("base_id")
+                            resultSet.getLong("base_id"),
+                            resultSet.getString("base_id"),
+                            resultSet.getString("base_id"),
+                            resultSet.getString("base_id")
                     ),
                     new Currency(
-                        resultSet.getLong("target_id"),
-                        resultSet.getString("target_id"),
-                        resultSet.getString("target_id"),
-                        resultSet.getString("target_id")
+                            resultSet.getLong("target_id"),
+                            resultSet.getString("target_id"),
+                            resultSet.getString("target_id"),
+                            resultSet.getString("target_id")
                     ),
                     resultSet.getBigDecimal("rate")
             );
