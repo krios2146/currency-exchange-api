@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  api:
+    image: krios2146/exchange-api
+    environment:
+      DB_URL: jdbc:postgresql://database:5432/rest-api
+      DB_USERNAME: java
+      DB_PASSWORD: java
+
+  database:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: java
+      POSTGRES_PASSWORD: java
+      POSTGRES_DATABASE: rest-api
+    volumes:
+      - ./scripts/init_tables.sql:/docker-entrypoint-initdb.d/init_tables.sql
+
+volumes:
+  scripts:
