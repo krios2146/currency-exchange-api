@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -56,7 +57,7 @@ public class ExchangeRatesServlet extends HttpServlet {
             ExchangeRate exchangeRateToAdd = new ExchangeRate(
                     currencyRepository.findByCode(baseCurrencyCode).get(),
                     currencyRepository.findByCode(targetCurrencyCode).get(),
-                    Double.parseDouble(rate)
+                    BigDecimal.valueOf(Double.parseDouble(rate))
             );
 
             exchangeRepository.save(exchangeRateToAdd);

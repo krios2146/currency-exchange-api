@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @WebServlet(name = "ExchangeServlet", urlPatterns = "/exchange")
@@ -42,16 +43,16 @@ public class ExchangeServlet extends HttpServlet {
 
         ExchangeRate exchangeRate = exchangeRateOptional.get();
 
-        double currencyExchangeRate = exchangeRate.getRate();
-        double amountToConvert;
+        BigDecimal currencyExchangeRate = exchangeRate.getRate();
+        BigDecimal amountToConvert;
         try {
-            amountToConvert = Double.parseDouble(amountToConvertParam);
+            amountToConvert = BigDecimal.valueOf(Double.parseDouble(amountToConvertParam));
         } catch (NumberFormatException e) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect value of amount parameter");
             return;
         }
 
-        double convertedAmount = amountToConvert * currencyExchangeRate;
+        BigDecimal convertedAmount = amountToConvert.multiply(currencyExchangeRate);
 
         ExchangeResponse response = new ExchangeResponse(
                 exchangeRate.getBaseCurrency(),

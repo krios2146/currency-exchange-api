@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @WebServlet(name = "ExchangeRateServlet", urlPatterns = "/exchangeRate/*")
@@ -50,6 +51,7 @@ public class ExchangeRateServlet extends HttpServlet {
 
     protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String url = req.getPathInfo().replaceAll("/", "");
+        // TODO: Proper validation
         if (url.length() != 6) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
                     "Currency codes are either not provided or provided in an incorrect format");
@@ -74,7 +76,7 @@ public class ExchangeRateServlet extends HttpServlet {
 
         ExchangeRate exchangeRateToUpdate = exchangeRateToUpdateOptional.get();
         try {
-            exchangeRateToUpdate.setRate(Double.parseDouble(paramRateValue));
+            exchangeRateToUpdate.setRate(BigDecimal.valueOf(Double.parseDouble(paramRateValue)));
             exchangeRepository.update(exchangeRateToUpdate);
             doGet(req, resp);
         } catch (NumberFormatException e) {
