@@ -4,10 +4,7 @@ import pet.project.model.Currency;
 import pet.project.utils.ConfiguredDataSource;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -57,17 +54,22 @@ public class CurrencyRepository implements CrudRepository<Currency> {
     }
 
     @Override
-    public void save(Currency entity) {
+    public Currency save(Currency entity) {
         final String query = "INSERT INTO currencies (code, full_name, sign) VALUES (?, ?, ?)";
 
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(query);
+            PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 
             statement.setString(1, entity.getCode());
             statement.setString(2, entity.getFullName());
             statement.setString(3, entity.getSign());
 
             statement.execute();
+
+            ResultSet savedCurrency = statement.getGeneratedKeys();
+            savedCurrency.next();
+
+            return getCurrency(savedCurrency);
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
