@@ -58,7 +58,7 @@ public class CurrencyRepository implements CrudRepository<Currency> {
 
     @Override
     public void save(Currency entity) {
-        final String query = "INSERT INTO currencies (code, full_name, symbol) VALUES (?, ?, ?)";
+        final String query = "INSERT INTO currencies (code, full_name, sign) VALUES (?, ?, ?)";
 
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(query);
@@ -76,7 +76,7 @@ public class CurrencyRepository implements CrudRepository<Currency> {
 
     @Override
     public void update(Currency entity) {
-        final String query = "UPDATE currencies SET (code, full_name, symbol) = (?, ?, ?) WHERE id = ?";
+        final String query = "UPDATE currencies SET (code, full_name, sign) = (?, ?, ?) WHERE id = ?";
 
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(query);
@@ -133,7 +133,7 @@ public class CurrencyRepository implements CrudRepository<Currency> {
                     resultSet.getLong("id"),
                     resultSet.getString("code"),
                     resultSet.getString("full_name"),
-                    resultSet.getString("symbol")
+                    resultSet.getString("sign")
             );
         } catch (SQLException e) {
             throw new RuntimeException(e);
