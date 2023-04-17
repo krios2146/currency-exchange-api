@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS public.currencies (
     id bigint NOT NULL,
     code character varying(3) COLLATE pg_catalog."default" NOT NULL,
     full_name character varying COLLATE pg_catalog."default" NOT NULL,
-    sign character varying(1) COLLATE pg_catalog."default" NOT NULL,
+    sign character varying(5) COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT currencies_pkey PRIMARY KEY (id),
     CONSTRAINT currencies_code_key UNIQUE (code)
 );
