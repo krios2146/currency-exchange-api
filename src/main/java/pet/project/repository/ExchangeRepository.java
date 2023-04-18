@@ -5,10 +5,7 @@ import pet.project.model.ExchangeRate;
 import pet.project.utils.ConfiguredDataSource;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -95,17 +92,23 @@ public class ExchangeRepository implements CrudRepository<ExchangeRate> {
     }
 
     @Override
-    public void save(ExchangeRate entity) {
+    public Long save(ExchangeRate entity) {
         final String query = "INSERT INTO exchange_rates (base_currency_id, target_currency_id, rate) VALUES (?, ?, ?)";
 
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(query);
+            connection.setAutoCommit(false);
+            PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 
             statement.setLong(1, entity.getBaseCurrency().getId());
             statement.setLong(2, entity.getTargetCurrency().getId());
             statement.setBigDecimal(3, entity.getRate());
 
             statement.execute();
+
+            ResultSet savedExchangeRate = statement.getGeneratedKeys();
+            savedExchangeRate.next();
+
+            return savedExchangeRate.getLong("id");
 
         } catch (SQLException e) {
             throw new RuntimeException(e);

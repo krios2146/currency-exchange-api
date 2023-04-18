@@ -54,7 +54,7 @@ public class CurrencyRepository implements CrudRepository<Currency> {
     }
 
     @Override
-    public Currency save(Currency entity) {
+    public Long save(Currency entity) {
         final String query = "INSERT INTO currencies (code, full_name, sign) VALUES (?, ?, ?)";
 
         try (Connection connection = dataSource.getConnection()) {
@@ -69,7 +69,7 @@ public class CurrencyRepository implements CrudRepository<Currency> {
             ResultSet savedCurrency = statement.getGeneratedKeys();
             savedCurrency.next();
 
-            return getCurrency(savedCurrency);
+            return savedCurrency.getLong("id");
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
