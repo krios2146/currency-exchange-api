@@ -21,13 +21,13 @@ import java.util.Optional;
 @WebServlet(name = "ExchangeRatesServlet", urlPatterns = "/exchangeRates")
 public class ExchangeRatesServlet extends HttpServlet {
     private final ExchangeRepository exchangeRepository = new JdbcExchangeRepository();
-    private final CurrencyRepository jdbcCurrencyRepository = new JdbcCurrencyRepository();
+    private final CurrencyRepository currencyRepository = new JdbcCurrencyRepository();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<ExchangeRate> exchangeRates = exchangeRepository.findAll();
 
-        ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.writeValue(resp.getWriter(), exchangeRates);
     }
 
@@ -58,15 +58,14 @@ public class ExchangeRatesServlet extends HttpServlet {
 
         try {
             ExchangeRate exchangeRateToAdd = new ExchangeRate(
-                    jdbcCurrencyRepository.findByCode(baseCurrencyCode).get(),
-                    jdbcCurrencyRepository.findByCode(targetCurrencyCode).get(),
+                    currencyRepository.findByCode(baseCurrencyCode).get(),
+                    currencyRepository.findByCode(targetCurrencyCode).get(),
                     BigDecimal.valueOf(Double.parseDouble(rate))
             );
 
             exchangeRepository.save(exchangeRateToAdd);
             ExchangeRate addedExchangeRate = exchangeRepository.findByCodes(baseCurrencyCode, targetCurrencyCode).get();
-
-            ObjectMapper objectMapper = new ObjectMapper();
+            
             objectMapper.writeValue(resp.getWriter(), addedExchangeRate);
 
         } catch (NumberFormatException e) {

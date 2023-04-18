@@ -18,6 +18,7 @@ import java.util.Optional;
 @WebServlet(name = "ExchangeServlet", urlPatterns = "/exchange")
 public class ExchangeServlet extends HttpServlet {
     private final ExchangeRepository exchangeRepository = new JdbcExchangeRepository();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -63,7 +64,6 @@ public class ExchangeServlet extends HttpServlet {
                 convertedAmount
         );
 
-        ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.writeValue(resp.getWriter(), response);
     }
 }

@@ -17,6 +17,7 @@ import java.util.Optional;
 @WebServlet(name = "ExchangeRateServlet", urlPatterns = "/exchangeRate/*")
 public class ExchangeRateServlet extends HttpServlet {
     private final ExchangeRepository exchangeRepository = new JdbcExchangeRepository();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -46,7 +47,6 @@ public class ExchangeRateServlet extends HttpServlet {
             return;
         }
 
-        ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.writeValue(resp.getWriter(), exchangeRateOptional.get());
     }
 

@@ -18,12 +18,12 @@ import static pet.project.utils.Validation.isValidCurrencyCode;
 @WebServlet(name = "CurrenciesServlet", urlPatterns = "/currencies")
 public class CurrenciesServlet extends HttpServlet {
     private final CurrencyRepository currencyRepository = new JdbcCurrencyRepository();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         List<Currency> currencyList = currencyRepository.findAll();
 
-        ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.writeValue(resp.getWriter(), currencyList);
     }
 
@@ -66,7 +66,6 @@ public class CurrenciesServlet extends HttpServlet {
 
         currency.setId(savedCurrencyId);
 
-        ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.writeValue(resp.getWriter(), currency);
     }
 }
