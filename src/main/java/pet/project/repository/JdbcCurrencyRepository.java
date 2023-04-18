@@ -9,8 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class CurrencyRepository implements CrudRepository<Currency> {
+public class JdbcCurrencyRepository implements CrudRepository<Currency> {
     private final DataSource dataSource = ConfiguredDataSource.getInstance();
+    private final String INTEGRITY_CONSTRAINT_VIOLATION_CODE = "23505";
 
     @Override
     public Optional<Currency> findById(Long id) {
@@ -54,7 +55,7 @@ public class CurrencyRepository implements CrudRepository<Currency> {
     }
 
     @Override
-    public Long save(Currency entity) {
+    public Long save(Currency entity) throws SQLException {
         final String query = "INSERT INTO currencies (code, full_name, sign) VALUES (?, ?, ?)";
 
         try (Connection connection = dataSource.getConnection()) {
@@ -72,6 +73,9 @@ public class CurrencyRepository implements CrudRepository<Currency> {
             return savedCurrency.getLong("id");
 
         } catch (SQLException e) {
+            if (e.getSQLState().equals(INTEGRITY_CONSTRAINT_VIOLATION_CODE)) {
+                throw new SQLIntegrityConstraintViolationException(e);
+            }
             throw new RuntimeException(e);
         }
     }
