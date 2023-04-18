@@ -2,6 +2,7 @@ package pet.project.servlet.currency;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import pet.project.model.Currency;
+import pet.project.model.response.ErrorResponse;
 import pet.project.repository.CurrencyRepository;
 import pet.project.repository.JdbcCurrencyRepository;
 
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Optional;
 
 import static pet.project.utils.Validation.isValidCurrencyCode;
@@ -24,18 +26,31 @@ public class CurrencyServlet extends HttpServlet {
         String code = req.getPathInfo().replaceAll("/", "");
 
         if (!isValidCurrencyCode(code)) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Currency code must be in ISO 4217 format");
+            objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    "Currency code must be in ISO 4217 format"
+            ));
             return;
         }
 
-        String currencyCode = code.toUpperCase();
+        try {
+            Optional<Currency> currencyOptional = currencyRepository.findByCode(code);
 
-        Optional<Currency> currencyOptional = currencyRepository.findByCode(currencyCode);
-        if (currencyOptional.isEmpty()) {
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "There is no such currency in the database");
-            return;
+            if (currencyOptional.isEmpty()) {
+                objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
+                        HttpServletResponse.SC_NOT_FOUND,
+                        "There is no such currency in the database"
+                ));
+                return;
+            }
+
+            objectMapper.writeValue(resp.getWriter(), currencyOptional.get());
+
+        } catch (SQLException e) {
+            objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Something happened with the database, try again later!"
+            ));
         }
-
-        objectMapper.writeValue(resp.getWriter(), currencyOptional.get());
     }
 }
