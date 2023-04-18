@@ -2,6 +2,8 @@ package pet.project.servlet.exchange;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import pet.project.model.ExchangeRate;
+import pet.project.repository.CurrencyRepository;
+import pet.project.repository.ExchangeRepository;
 import pet.project.repository.JdbcCurrencyRepository;
 import pet.project.repository.JdbcExchangeRepository;
 
@@ -18,8 +20,8 @@ import java.util.Optional;
 
 @WebServlet(name = "ExchangeRatesServlet", urlPatterns = "/exchangeRates")
 public class ExchangeRatesServlet extends HttpServlet {
-    private final JdbcExchangeRepository exchangeRepository = new JdbcExchangeRepository();
-    private final JdbcCurrencyRepository jdbcCurrencyRepository = new JdbcCurrencyRepository();
+    private final ExchangeRepository exchangeRepository = new JdbcExchangeRepository();
+    private final CurrencyRepository jdbcCurrencyRepository = new JdbcCurrencyRepository();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

@@ -3,6 +3,7 @@ package pet.project.servlet.exchange;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import pet.project.model.ExchangeRate;
 import pet.project.model.ExchangeResponse;
+import pet.project.repository.ExchangeRepository;
 import pet.project.repository.JdbcExchangeRepository;
 
 import javax.servlet.ServletException;
@@ -16,7 +17,7 @@ import java.util.Optional;
 
 @WebServlet(name = "ExchangeServlet", urlPatterns = "/exchange")
 public class ExchangeServlet extends HttpServlet {
-    private final JdbcExchangeRepository exchangeRepository = new JdbcExchangeRepository();
+    private final ExchangeRepository exchangeRepository = new JdbcExchangeRepository();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
