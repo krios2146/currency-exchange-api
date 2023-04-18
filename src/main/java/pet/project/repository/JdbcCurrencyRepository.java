@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class JdbcCurrencyRepository implements CrudRepository<Currency> {
+public class JdbcCurrencyRepository implements CurrencyRepository {
     private final DataSource dataSource = ConfiguredDataSource.getInstance();
     private final String INTEGRITY_CONSTRAINT_VIOLATION_CODE = "23505";
 
@@ -113,6 +113,7 @@ public class JdbcCurrencyRepository implements CrudRepository<Currency> {
         }
     }
 
+    @Override
     public Optional<Currency> findByCode(String code) {
         final String query = "SELECT * FROM currencies WHERE code = ?";
 
