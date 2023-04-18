@@ -14,7 +14,7 @@ public class JdbcExchangeRepository implements ExchangeRepository {
     private final DataSource dataSource = ConfiguredDataSource.getInstance();
 
     @Override
-    public Optional<ExchangeRate> findById(Long id) {
+    public Optional<ExchangeRate> findById(Long id) throws SQLException {
         // @formatter:off
         final String query =
             """
@@ -47,14 +47,11 @@ public class JdbcExchangeRepository implements ExchangeRepository {
             }
 
             return Optional.of(getExchangeRate(resultSet));
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public List<ExchangeRate> findAll() {
+    public List<ExchangeRate> findAll() throws SQLException {
         // @formatter:off
         final String query =
             """
@@ -85,14 +82,11 @@ public class JdbcExchangeRepository implements ExchangeRepository {
                 exchangeRatesList.add(getExchangeRate(resultSet));
             }
             return exchangeRatesList;
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Long save(ExchangeRate entity) {
+    public Long save(ExchangeRate entity) throws SQLException {
         final String query = "INSERT INTO exchange_rates (base_currency_id, target_currency_id, rate) VALUES (?, ?, ?)";
 
         try (Connection connection = dataSource.getConnection()) {
@@ -109,14 +103,11 @@ public class JdbcExchangeRepository implements ExchangeRepository {
             savedExchangeRate.next();
 
             return savedExchangeRate.getLong("id");
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void update(ExchangeRate entity) {
+    public void update(ExchangeRate entity) throws SQLException {
         // @formatter:off
         final String query =
                 "UPDATE exchange_rates " +
@@ -133,28 +124,22 @@ public class JdbcExchangeRepository implements ExchangeRepository {
             statement.setLong(4, entity.getId());
 
             statement.execute();
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(Long id) throws SQLException {
         final String query = "DELETE FROM exchange_rates WHERE id = ?";
 
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setLong(1, id);
             statement.execute();
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Optional<ExchangeRate> findByCodes(String baseCurrencyCode, String targetCurrencyCode) {
+    public Optional<ExchangeRate> findByCodes(String baseCurrencyCode, String targetCurrencyCode) throws SQLException {
         // @formatter:off
         final String query =
             """
@@ -193,15 +178,12 @@ public class JdbcExchangeRepository implements ExchangeRepository {
             }
 
             return Optional.of(getExchangeRate(resultSet));
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
     // may be naming is not good enough
     @Override
-    public List<ExchangeRate> findByCodesWithUsdBase(String baseCurrencyCode, String targetCurrencyCode) {
+    public List<ExchangeRate> findByCodesWithUsdBase(String baseCurrencyCode, String targetCurrencyCode) throws SQLException {
         // @formatter:off
         final String query =
                 """
@@ -241,32 +223,25 @@ public class JdbcExchangeRepository implements ExchangeRepository {
                 exchangeRatesList.add(getExchangeRate(resultSet));
             }
             return exchangeRatesList;
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
-    private static ExchangeRate getExchangeRate(ResultSet resultSet) {
-        try {
-            return new ExchangeRate(
-                    resultSet.getLong("id"),
-                    new Currency(
-                            resultSet.getLong("base_id"),
-                            resultSet.getString("base_id"),
-                            resultSet.getString("base_id"),
-                            resultSet.getString("base_id")
-                    ),
-                    new Currency(
-                            resultSet.getLong("target_id"),
-                            resultSet.getString("target_id"),
-                            resultSet.getString("target_id"),
-                            resultSet.getString("target_id")
-                    ),
-                    resultSet.getBigDecimal("rate")
-            );
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+    private static ExchangeRate getExchangeRate(ResultSet resultSet) throws SQLException {
+        return new ExchangeRate(
+                resultSet.getLong("id"),
+                new Currency(
+                        resultSet.getLong("base_id"),
+                        resultSet.getString("base_id"),
+                        resultSet.getString("base_id"),
+                        resultSet.getString("base_id")
+                ),
+                new Currency(
+                        resultSet.getLong("target_id"),
+                        resultSet.getString("target_id"),
+                        resultSet.getString("target_id"),
+                        resultSet.getString("target_id")
+                ),
+                resultSet.getBigDecimal("rate")
+        );
     }
 }

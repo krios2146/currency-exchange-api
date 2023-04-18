@@ -11,10 +11,9 @@ import java.util.Optional;
 
 public class JdbcCurrencyRepository implements CurrencyRepository {
     private final DataSource dataSource = ConfiguredDataSource.getInstance();
-    private final String INTEGRITY_CONSTRAINT_VIOLATION_CODE = "23505";
 
     @Override
-    public Optional<Currency> findById(Long id) {
+    public Optional<Currency> findById(Long id) throws SQLException {
         final String query = "SELECT * FROM currencies WHERE id = ?";
 
         try (Connection connection = dataSource.getConnection()) {
@@ -28,14 +27,11 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
             }
 
             return Optional.of(getCurrency(resultSet));
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public List<Currency> findAll() {
+    public List<Currency> findAll() throws SQLException {
         final String query = "SELECT * FROM currencies";
 
         try (Connection connection = dataSource.getConnection()) {
@@ -48,9 +44,6 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
                 currencyList.add(getCurrency(resultSet));
             }
             return currencyList;
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -71,17 +64,11 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
             savedCurrency.next();
 
             return savedCurrency.getLong("id");
-
-        } catch (SQLException e) {
-            if (e.getSQLState().equals(INTEGRITY_CONSTRAINT_VIOLATION_CODE)) {
-                throw new SQLIntegrityConstraintViolationException(e);
-            }
-            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void update(Currency entity) {
+    public void update(Currency entity) throws SQLException {
         final String query = "UPDATE currencies SET (code, full_name, sign) = (?, ?, ?) WHERE id = ?";
 
         try (Connection connection = dataSource.getConnection()) {
@@ -93,28 +80,22 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
             statement.setLong(4, entity.getId());
 
             statement.execute();
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(Long id) throws SQLException {
         final String query = "DELETE FROM currencies WHERE id = ?";
 
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setLong(1, id);
             statement.execute();
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Optional<Currency> findByCode(String code) {
+    public Optional<Currency> findByCode(String code) throws SQLException {
         final String query = "SELECT * FROM currencies WHERE code = ?";
 
         try (Connection connection = dataSource.getConnection()) {
@@ -128,22 +109,15 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
             }
 
             return Optional.of(getCurrency(resultSet));
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
-    private static Currency getCurrency(ResultSet resultSet) {
-        try {
-            return new Currency(
-                    resultSet.getLong("id"),
-                    resultSet.getString("code"),
-                    resultSet.getString("full_name"),
-                    resultSet.getString("sign")
-            );
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+    private static Currency getCurrency(ResultSet resultSet) throws SQLException {
+        return new Currency(
+                resultSet.getLong("id"),
+                resultSet.getString("code"),
+                resultSet.getString("full_name"),
+                resultSet.getString("sign")
+        );
     }
 }
