@@ -2,7 +2,7 @@ package pet.project.servlet.exchange;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import pet.project.model.ExchangeRate;
-import pet.project.model.ExchangeResponse;
+import pet.project.model.response.ExchangeResponse;
 import pet.project.repository.ExchangeRepository;
 import pet.project.repository.JdbcExchangeRepository;
 

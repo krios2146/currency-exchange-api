@@ -1,8 +1,9 @@
-package pet.project.model;
+package pet.project.model.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pet.project.model.Currency;
 
 import java.math.BigDecimal;
 
