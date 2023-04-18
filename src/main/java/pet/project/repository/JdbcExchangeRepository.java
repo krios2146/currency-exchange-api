@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class JdbcExchangeRepository implements CrudRepository<ExchangeRate> {
+public class JdbcExchangeRepository implements ExchangeRepository {
     private final DataSource dataSource = ConfiguredDataSource.getInstance();
 
     @Override
@@ -153,6 +153,7 @@ public class JdbcExchangeRepository implements CrudRepository<ExchangeRate> {
         }
     }
 
+    @Override
     public Optional<ExchangeRate> findByCodes(String baseCurrencyCode, String targetCurrencyCode) {
         // @formatter:off
         final String query =
@@ -199,6 +200,7 @@ public class JdbcExchangeRepository implements CrudRepository<ExchangeRate> {
     }
 
     // may be naming is not good enough
+    @Override
     public List<ExchangeRate> findByCodesWithUsdBase(String baseCurrencyCode, String targetCurrencyCode) {
         // @formatter:off
         final String query =
