@@ -2,6 +2,7 @@ package pet.project.servlet.currency;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import pet.project.model.Currency;
+import pet.project.repository.CurrencyRepository;
 import pet.project.repository.JdbcCurrencyRepository;
 
 import javax.servlet.annotation.WebServlet;
@@ -15,7 +16,7 @@ import static pet.project.utils.Validation.isValidCurrencyCode;
 
 @WebServlet(name = "CurrencyServlet", urlPatterns = "/currency/*")
 public class CurrencyServlet extends HttpServlet {
-    private final JdbcCurrencyRepository jdbcCurrencyRepository = new JdbcCurrencyRepository();
+    private final CurrencyRepository currencyRepository = new JdbcCurrencyRepository();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -28,7 +29,7 @@ public class CurrencyServlet extends HttpServlet {
 
         String currencyCode = code.toUpperCase();
 
-        Optional<Currency> currencyOptional = jdbcCurrencyRepository.findByCode(currencyCode);
+        Optional<Currency> currencyOptional = currencyRepository.findByCode(currencyCode);
         if (currencyOptional.isEmpty()) {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND, "There is no such currency in the database");
             return;

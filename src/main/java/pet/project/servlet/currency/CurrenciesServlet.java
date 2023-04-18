@@ -2,6 +2,7 @@ package pet.project.servlet.currency;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import pet.project.model.Currency;
+import pet.project.repository.CurrencyRepository;
 import pet.project.repository.JdbcCurrencyRepository;
 
 import javax.servlet.annotation.WebServlet;
@@ -16,11 +17,11 @@ import static pet.project.utils.Validation.isValidCurrencyCode;
 
 @WebServlet(name = "CurrenciesServlet", urlPatterns = "/currencies")
 public class CurrenciesServlet extends HttpServlet {
-    private final JdbcCurrencyRepository jdbcCurrencyRepository = new JdbcCurrencyRepository();
+    private final CurrencyRepository currencyRepository = new JdbcCurrencyRepository();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        List<Currency> currencyList = jdbcCurrencyRepository.findAll();
+        List<Currency> currencyList = currencyRepository.findAll();
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.writeValue(resp.getWriter(), currencyList);
@@ -50,7 +51,7 @@ public class CurrenciesServlet extends HttpServlet {
             return;
         }
 
-        Optional<Currency> currencyOptional = jdbcCurrencyRepository.findByCode(code);
+        Optional<Currency> currencyOptional = currencyRepository.findByCode(code);
 
         if (currencyOptional.isPresent()) {
             resp.sendError(
@@ -61,7 +62,7 @@ public class CurrenciesServlet extends HttpServlet {
         }
 
         Currency currency = new Currency(code, name, symbol);
-        Long savedCurrencyId = jdbcCurrencyRepository.save(currency);
+        Long savedCurrencyId = currencyRepository.save(currency);
 
         currency.setId(savedCurrencyId);
 
