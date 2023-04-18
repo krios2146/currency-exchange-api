@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ExchangeRepository implements CrudRepository<ExchangeRate> {
+public class JdbcExchangeRepository implements CrudRepository<ExchangeRate> {
     private final DataSource dataSource = ConfiguredDataSource.getInstance();
 
     @Override
