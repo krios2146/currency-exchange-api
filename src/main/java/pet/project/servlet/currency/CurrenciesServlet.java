@@ -59,7 +59,7 @@ public class CurrenciesServlet extends HttpServlet {
         if (symbol == null || symbol.isBlank()) {
             objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
                     HttpServletResponse.SC_BAD_REQUEST,
-                    "Missing parameters - symbol"
+                    "Missing parameter - symbol"
             ));
             return;
         }
