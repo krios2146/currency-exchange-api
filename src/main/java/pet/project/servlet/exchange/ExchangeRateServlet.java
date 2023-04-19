@@ -136,7 +136,6 @@ public class ExchangeRateServlet extends HttpServlet {
         }
 
         try {
-
             Optional<ExchangeRate> exchangeRateOptional = exchangeRepository.findByCodes(baseCurrencyCode, targetCurrencyCode);
 
             if (exchangeRateOptional.isEmpty()) {
