@@ -47,6 +47,28 @@ public class ExchangeRatesServlet extends HttpServlet {
         String targetCurrencyCode = req.getParameter("targetCurrencyCode");
         String rateParam = req.getParameter("rate");
 
+        if (baseCurrencyCode == null || baseCurrencyCode.isBlank()) {
+            objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    "Missing parameter - baseCurrencyCode"
+            ));
+            return;
+        }
+        if (targetCurrencyCode == null || targetCurrencyCode.isBlank()) {
+            objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    "Missing parameter - targetCurrencyCode"
+            ));
+            return;
+        }
+        if (rateParam == null || rateParam.isBlank()) {
+            objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    "Missing parameter - rate"
+            ));
+            return;
+        }
+
         if (!isValidCurrencyCode(baseCurrencyCode)) {
             objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
                     HttpServletResponse.SC_BAD_REQUEST,
@@ -54,7 +76,6 @@ public class ExchangeRatesServlet extends HttpServlet {
             ));
             return;
         }
-
         if (!isValidCurrencyCode(targetCurrencyCode)) {
             objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
                     HttpServletResponse.SC_BAD_REQUEST,
