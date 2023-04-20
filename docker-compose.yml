@@ -18,7 +18,7 @@ services:
       POSTGRES_USER: java
       POSTGRES_PASSWORD: java
     volumes:
-      - ./scripts/init_tables.sql:/docker-entrypoint-initdb.d/init_tables.sql
+      - ./scripts/.:/docker-entrypoint-initdb.d/.
 
 volumes:
   scripts:
