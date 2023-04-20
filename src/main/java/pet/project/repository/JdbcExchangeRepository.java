@@ -30,8 +30,8 @@ public class JdbcExchangeRepository implements ExchangeRepository {
                     tc.sign AS target_sign,
                     er.rate AS rate
                 FROM exchange_rates er
-                JOIN currency bc ON er.base_currency_id = bc.id
-                JOIN currency tc ON er.target_currency_id = tc.id
+                JOIN currencies bc ON er.base_currency_id = bc.id
+                JOIN currencies tc ON er.target_currency_id = tc.id
                 WHERE er.id = ?
             """;
 
@@ -67,8 +67,8 @@ public class JdbcExchangeRepository implements ExchangeRepository {
                     tc.sign AS target_sign,
                     er.rate AS rate
                 FROM exchange_rates er
-                JOIN currency bc ON er.base_currency_id = bc.id
-                JOIN currency tc ON er.target_currency_id = tc.id
+                JOIN currencies bc ON er.base_currency_id = bc.id
+                JOIN currencies tc ON er.target_currency_id = tc.id
             """;
 
         // @formatter:on
@@ -155,11 +155,11 @@ public class JdbcExchangeRepository implements ExchangeRepository {
                     tc.sign AS target_sign,
                     er.rate AS rate
                 FROM exchange_rates er
-                JOIN currency bc ON er.base_currency_id = bc.id
-                JOIN currency tc ON er.target_currency_id = tc.id
+                JOIN currencies bc ON er.base_currency_id = bc.id
+                JOIN currencies tc ON er.target_currency_id = tc.id
                 WHERE (
-                    base_currency_id = (SELECT c.id FROM currency c WHERE c.code = ?) AND
-                    target_currency_id = (SELECT c2.id FROM currency c2 WHERE c2.code = ?)
+                    base_currency_id = (SELECT c.id FROM currencies c WHERE c.code = ?) AND
+                    target_currency_id = (SELECT c2.id FROM currencies c2 WHERE c2.code = ?)
                 )
             """;
 
@@ -199,12 +199,12 @@ public class JdbcExchangeRepository implements ExchangeRepository {
                         tc.sign AS target_sign,
                         er.rate AS rate
                     FROM exchange_rates er
-                    JOIN currency bc ON er.base_currency_id = bc.id
-                    JOIN currency tc ON er.target_currency_id = tc.id
+                    JOIN currencies bc ON er.base_currency_id = bc.id
+                    JOIN currencies tc ON er.target_currency_id = tc.id
                     WHERE (
-                        base_currency_id = (SELECT c.id FROM currency c WHERE c.code = 'USD') AND
-                        target_currency_id = (SELECT c2.id FROM currency c2 WHERE c2.code = ?) OR
-                        target_currency_id = (SELECT c3.id FROM currency c3 WHERE c3.code = ?)
+                        base_currency_id = (SELECT c.id FROM currencies c WHERE c.code = 'USD') AND
+                        target_currency_id = (SELECT c2.id FROM currencies c2 WHERE c2.code = ?) OR
+                        target_currency_id = (SELECT c3.id FROM currencies c3 WHERE c3.code = ?)
                     )
                 """;
 
