@@ -7,6 +7,8 @@ services:
       DB_URL: jdbc:postgresql://database:5432/rest-api
       DB_USERNAME: java
       DB_PASSWORD: java
+    ports:
+      - "8080:8080"
 
   database:
     image: postgres
