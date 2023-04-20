@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS public.currencies (
-    id bigint NOT NULL DEFAULT 'nextval('currencies_id_seq'::regclass)',
+    id bigint NOT NULL DEFAULT nextval('currencies_id_seq'::regclass),
     code character varying(3) COLLATE pg_catalog."default" NOT NULL,
     full_name character varying COLLATE pg_catalog."default" NOT NULL,
     sign character varying(5) COLLATE pg_catalog."default" NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS public.currencies (
 );
 
 CREATE TABLE IF NOT EXISTS public.exchange_rates (
-    id bigint NOT NULL DEFAULT 'nextval('exchange_rates_id_seq'::regclass)',
+    id bigint NOT NULL DEFAULT nextval('exchange_rates_id_seq'::regclass),
     base_currency_id bigint NOT NULL,
     target_currency_id bigint NOT NULL,
     rate double precision NOT NULL,
