@@ -1,0 +1,18 @@
+name: Update Docker image
+
+on:
+  workflow_dispatch:
+
+jobs:
+  exchange-api-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build an api Docker image
+        run: docker build . --tag exchange-api --no-cache
+      - name: Login to a docker registry
+        run: docker login -u krios2146 -p ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+      - name: Tag the local image to a remote image
+        run: docker tag exchange-api krios2146/exchange-api
+      - name: Push the image to a registry
+        run: docker push krios2146/exchange-api
