@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Optional;
 
+import static javax.servlet.http.HttpServletResponse.*;
 import static pet.project.utils.Validation.isValidCurrencyCode;
 
 @WebServlet(name = "CurrencyServlet", urlPatterns = "/currency/*")
@@ -26,8 +27,9 @@ public class CurrencyServlet extends HttpServlet {
         String code = req.getPathInfo().replaceAll("/", "");
 
         if (!isValidCurrencyCode(code)) {
+            resp.setStatus(SC_BAD_REQUEST);
             objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
-                    HttpServletResponse.SC_BAD_REQUEST,
+                    SC_BAD_REQUEST,
                     "Currency code must be in ISO 4217 format"
             ));
             return;
@@ -37,8 +39,9 @@ public class CurrencyServlet extends HttpServlet {
             Optional<Currency> currencyOptional = currencyRepository.findByCode(code);
 
             if (currencyOptional.isEmpty()) {
+                resp.setStatus(SC_NOT_FOUND);
                 objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
-                        HttpServletResponse.SC_NOT_FOUND,
+                        SC_NOT_FOUND,
                         "There is no such currency in the database"
                 ));
                 return;
@@ -47,8 +50,9 @@ public class CurrencyServlet extends HttpServlet {
             objectMapper.writeValue(resp.getWriter(), currencyOptional.get());
 
         } catch (SQLException e) {
+            resp.setStatus(SC_INTERNAL_SERVER_ERROR);
             objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    SC_INTERNAL_SERVER_ERROR,
                     "Something happened with the database, try again later!"
             ));
         }

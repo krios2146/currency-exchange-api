@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
+import static javax.servlet.http.HttpServletResponse.*;
 import static pet.project.utils.Validation.isValidCurrencyCode;
 
 @WebServlet(name = "CurrenciesServlet", urlPatterns = "/currencies")
@@ -29,8 +30,9 @@ public class CurrenciesServlet extends HttpServlet {
             objectMapper.writeValue(resp.getWriter(), currencyList);
 
         } catch (SQLException e) {
+            resp.setStatus(SC_INTERNAL_SERVER_ERROR);
             objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    SC_INTERNAL_SERVER_ERROR,
                     "Something happened with the database, try again later!"
             ));
         }
@@ -43,30 +45,34 @@ public class CurrenciesServlet extends HttpServlet {
         String symbol = req.getParameter("symbol");
 
         if (name == null || name.isBlank()) {
+            resp.setStatus(SC_BAD_REQUEST);
             objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
-                    HttpServletResponse.SC_BAD_REQUEST,
+                    SC_BAD_REQUEST,
                     "Missing parameter - name"
             ));
             return;
         }
         if (code == null || code.isBlank()) {
+            resp.setStatus(SC_BAD_REQUEST);
             objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
-                    HttpServletResponse.SC_BAD_REQUEST,
+                    SC_BAD_REQUEST,
                     "Missing parameter - code"
             ));
             return;
         }
         if (symbol == null || symbol.isBlank()) {
+            resp.setStatus(SC_BAD_REQUEST);
             objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
-                    HttpServletResponse.SC_BAD_REQUEST,
+                    SC_BAD_REQUEST,
                     "Missing parameter - symbol"
             ));
             return;
         }
 
         if (!isValidCurrencyCode(code)) {
+            resp.setStatus(SC_BAD_REQUEST);
             objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
-                    HttpServletResponse.SC_BAD_REQUEST,
+                    SC_BAD_REQUEST,
                     "Currency code must be in ISO 4217 format"
             ));
             return;
@@ -81,13 +87,15 @@ public class CurrenciesServlet extends HttpServlet {
 
         } catch (SQLException e) {
             if (e.getSQLState().equals(INTEGRITY_CONSTRAINT_VIOLATION_CODE)) {
+                resp.setStatus(SC_CONFLICT);
                 objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
-                        HttpServletResponse.SC_CONFLICT,
+                        SC_CONFLICT,
                         e.getMessage()
                 ));
             }
+            resp.setStatus(SC_INTERNAL_SERVER_ERROR);
             objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    SC_INTERNAL_SERVER_ERROR,
                     "Something happened with the database, try again later!"
             ));
         }

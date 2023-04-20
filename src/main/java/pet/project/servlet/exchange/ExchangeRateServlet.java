@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Optional;
 
+import static javax.servlet.http.HttpServletResponse.*;
 import static pet.project.utils.Validation.isValidCurrencyCode;
 
 @WebServlet(name = "ExchangeRateServlet", urlPatterns = "/exchangeRate/*")
@@ -37,8 +38,9 @@ public class ExchangeRateServlet extends HttpServlet {
         String url = req.getPathInfo().replaceAll("/", "");
 
         if (url.length() != 6) {
+            resp.setStatus(SC_BAD_REQUEST);
             objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
-                    HttpServletResponse.SC_BAD_REQUEST,
+                    SC_BAD_REQUEST,
                     "Currency codes are either not provided or provided in an incorrect format"
             ));
             return;
@@ -48,16 +50,18 @@ public class ExchangeRateServlet extends HttpServlet {
         String targetCurrencyCode = url.substring(3);
 
         if (!isValidCurrencyCode(baseCurrencyCode)) {
+            resp.setStatus(SC_BAD_REQUEST);
             objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
-                    HttpServletResponse.SC_BAD_REQUEST,
+                    SC_BAD_REQUEST,
                     "Base currency code must be in ISO 4217 format"
             ));
             return;
         }
 
         if (!isValidCurrencyCode(targetCurrencyCode)) {
+            resp.setStatus(SC_BAD_REQUEST);
             objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
-                    HttpServletResponse.SC_BAD_REQUEST,
+                    SC_BAD_REQUEST,
                     "Target currency code must be in ISO 4217 format"
             ));
             return;
@@ -67,8 +71,9 @@ public class ExchangeRateServlet extends HttpServlet {
             Optional<ExchangeRate> exchangeRateOptional = exchangeRepository.findByCodes(baseCurrencyCode, targetCurrencyCode);
 
             if (exchangeRateOptional.isEmpty()) {
+                resp.setStatus(SC_NOT_FOUND);
                 objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
-                        HttpServletResponse.SC_NOT_FOUND,
+                        SC_NOT_FOUND,
                         "There is no exchange rate for this currency pair"
                 ));
                 return;
@@ -77,8 +82,9 @@ public class ExchangeRateServlet extends HttpServlet {
             objectMapper.writeValue(resp.getWriter(), exchangeRateOptional.get());
 
         } catch (SQLException e) {
+            resp.setStatus(SC_INTERNAL_SERVER_ERROR);
             objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    SC_INTERNAL_SERVER_ERROR,
                     "Something happened with the database, try again later!"
             ));
         }
@@ -88,8 +94,9 @@ public class ExchangeRateServlet extends HttpServlet {
         String url = req.getPathInfo().replaceAll("/", "");
 
         if (url.length() != 6) {
+            resp.setStatus(SC_BAD_REQUEST);
             objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
-                    HttpServletResponse.SC_BAD_REQUEST,
+                    SC_BAD_REQUEST,
                     "Currency codes are either not provided or provided in an incorrect format"
             ));
             return;
@@ -97,8 +104,9 @@ public class ExchangeRateServlet extends HttpServlet {
 
         String parameter = req.getReader().readLine();
         if (parameter == null || !parameter.contains("rate")) {
+            resp.setStatus(SC_BAD_REQUEST);
             objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
-                    HttpServletResponse.SC_BAD_REQUEST,
+                    SC_BAD_REQUEST,
                     "Missing required parameter rate"
             ));
             return;
@@ -109,16 +117,18 @@ public class ExchangeRateServlet extends HttpServlet {
         String paramRateValue = parameter.replace("rate=", "");
 
         if (!isValidCurrencyCode(baseCurrencyCode)) {
+            resp.setStatus(SC_BAD_REQUEST);
             objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
-                    HttpServletResponse.SC_BAD_REQUEST,
+                    SC_BAD_REQUEST,
                     "Base currency code must be in ISO 4217 format"
             ));
             return;
         }
 
         if (!isValidCurrencyCode(targetCurrencyCode)) {
+            resp.setStatus(SC_BAD_REQUEST);
             objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
-                    HttpServletResponse.SC_BAD_REQUEST,
+                    SC_BAD_REQUEST,
                     "Target currency code must be in ISO 4217 format"
             ));
             return;
@@ -128,8 +138,9 @@ public class ExchangeRateServlet extends HttpServlet {
         try {
             rate = BigDecimal.valueOf(Double.parseDouble(paramRateValue));
         } catch (NumberFormatException e) {
+            resp.setStatus(SC_BAD_REQUEST);
             objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
-                    HttpServletResponse.SC_BAD_REQUEST,
+                    SC_BAD_REQUEST,
                     "Incorrect value of rate parameter"
             ));
             return;
@@ -139,8 +150,9 @@ public class ExchangeRateServlet extends HttpServlet {
             Optional<ExchangeRate> exchangeRateOptional = exchangeRepository.findByCodes(baseCurrencyCode, targetCurrencyCode);
 
             if (exchangeRateOptional.isEmpty()) {
+                resp.setStatus(SC_NOT_FOUND);
                 objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
-                        HttpServletResponse.SC_NOT_FOUND,
+                        SC_NOT_FOUND,
                         "There is no exchange rate for this currency pair"
                 ));
                 return;
@@ -153,8 +165,9 @@ public class ExchangeRateServlet extends HttpServlet {
             objectMapper.writeValue(resp.getWriter(), exchangeRate);
 
         } catch (SQLException e) {
+            resp.setStatus(SC_INTERNAL_SERVER_ERROR);
             objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    SC_INTERNAL_SERVER_ERROR,
                     "Something happened with the database, try again later!"
             ));
         }
