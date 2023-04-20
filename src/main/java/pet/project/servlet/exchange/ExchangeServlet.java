@@ -1,69 +1,94 @@
 package pet.project.servlet.exchange;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import pet.project.model.ExchangeRate;
+import pet.project.model.response.ErrorResponse;
 import pet.project.model.response.ExchangeResponse;
-import pet.project.repository.ExchangeRepository;
-import pet.project.repository.JdbcExchangeRepository;
+import pet.project.service.ExchangeService;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Optional;
+import java.sql.SQLException;
+import java.util.NoSuchElementException;
+
+import static pet.project.utils.Validation.isValidCurrencyCode;
 
 @WebServlet(name = "ExchangeServlet", urlPatterns = "/exchange")
 public class ExchangeServlet extends HttpServlet {
-    private final ExchangeRepository exchangeRepository = new JdbcExchangeRepository();
+    private final ExchangeService exchangeService = new ExchangeService();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String baseCurrencyCode = req.getParameter("from");
         String targetCurrencyCode = req.getParameter("to");
         String amountToConvertParam = req.getParameter("amount");
 
-        if (baseCurrencyCode == null || targetCurrencyCode == null || amountToConvertParam == null ||
-                baseCurrencyCode.isBlank() || targetCurrencyCode.isBlank() || amountToConvertParam.isBlank()) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters: from, to or amount");
+        if (baseCurrencyCode == null || baseCurrencyCode.isBlank()) {
+            objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    "Missing parameter - from"
+            ));
+            return;
+        }
+        if (targetCurrencyCode == null || targetCurrencyCode.isBlank()) {
+            objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    "Missing parameter - to"
+            ));
+            return;
+        }
+        if (amountToConvertParam == null || amountToConvertParam.isBlank()) {
+            objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    "Missing parameter - amount"
+            ));
             return;
         }
 
-        if (baseCurrencyCode.length() != 3 || targetCurrencyCode.length() != 3) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Currency codes must be in ISO 4217 format");
+        if (!isValidCurrencyCode(baseCurrencyCode)) {
+            objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    "Base currency code must be in ISO 4217 format"
+            ));
+            return;
+        }
+        if (!isValidCurrencyCode(targetCurrencyCode)) {
+            objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    "Target currency code must be in ISO 4217 format"
+            ));
             return;
         }
 
-        Optional<ExchangeRate> exchangeRateOptional = exchangeRepository.findByCodes(baseCurrencyCode, targetCurrencyCode);
-        if (exchangeRateOptional.isEmpty()) {
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Exchange rate for this pair of currency does not exist");
-            return;
-        }
-
-        ExchangeRate exchangeRate = exchangeRateOptional.get();
-
-        BigDecimal currencyExchangeRate = exchangeRate.getRate();
-        BigDecimal amountToConvert;
+        BigDecimal amount;
         try {
-            amountToConvert = BigDecimal.valueOf(Double.parseDouble(amountToConvertParam));
+            amount = BigDecimal.valueOf(Double.parseDouble(amountToConvertParam));
         } catch (NumberFormatException e) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect value of amount parameter");
+            objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    "Incorrect value of amount parameter"
+            ));
             return;
         }
 
-        BigDecimal convertedAmount = amountToConvert.multiply(currencyExchangeRate);
+        try {
+            ExchangeResponse exchangeResponse = exchangeService.convertCurrency(baseCurrencyCode, targetCurrencyCode, amount);
+            objectMapper.writeValue(resp.getWriter(), exchangeResponse);
 
-        ExchangeResponse response = new ExchangeResponse(
-                exchangeRate.getBaseCurrency(),
-                exchangeRate.getTargetCurrency(),
-                currencyExchangeRate,
-                amountToConvert,
-                convertedAmount
-        );
-
-        objectMapper.writeValue(resp.getWriter(), response);
+        } catch (SQLException e) {
+            objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Something happened with the database, try again later!"
+            ));
+        } catch (NoSuchElementException e) {
+            objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
+                    HttpServletResponse.SC_NOT_FOUND,
+                    "There is no exchange rate for this currency pair"
+            ));
+        }
     }
 }
