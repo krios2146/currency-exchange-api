@@ -101,8 +101,11 @@ public class JdbcExchangeRepository implements ExchangeRepository {
 
             ResultSet savedExchangeRate = statement.getGeneratedKeys();
             savedExchangeRate.next();
+            long savedId = savedExchangeRate.getLong("id");
 
-            return savedExchangeRate.getLong("id");
+            connection.commit();
+            
+            return savedId;
         }
     }
 
@@ -231,15 +234,15 @@ public class JdbcExchangeRepository implements ExchangeRepository {
                 resultSet.getLong("id"),
                 new Currency(
                         resultSet.getLong("base_id"),
-                        resultSet.getString("base_id"),
-                        resultSet.getString("base_id"),
-                        resultSet.getString("base_id")
+                        resultSet.getString("base_code"),
+                        resultSet.getString("base_name"),
+                        resultSet.getString("base_sign")
                 ),
                 new Currency(
                         resultSet.getLong("target_id"),
-                        resultSet.getString("target_id"),
-                        resultSet.getString("target_id"),
-                        resultSet.getString("target_id")
+                        resultSet.getString("target_code"),
+                        resultSet.getString("target_name"),
+                        resultSet.getString("target_sign")
                 ),
                 resultSet.getBigDecimal("rate")
         );

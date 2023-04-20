@@ -52,6 +52,7 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
         final String query = "INSERT INTO currencies (code, full_name, sign) VALUES (?, ?, ?)";
 
         try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
             PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 
             statement.setString(1, entity.getCode());
@@ -62,8 +63,11 @@ public class JdbcCurrencyRepository implements CurrencyRepository {
 
             ResultSet savedCurrency = statement.getGeneratedKeys();
             savedCurrency.next();
+            long savedId = savedCurrency.getLong("id");
 
-            return savedCurrency.getLong("id");
+            connection.commit();
+
+            return savedId;
         }
     }
 
