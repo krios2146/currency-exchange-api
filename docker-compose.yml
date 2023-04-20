@@ -14,9 +14,9 @@ services:
     image: postgres
     restart: always
     environment:
+      POSTGRES_DB: rest-api
       POSTGRES_USER: java
       POSTGRES_PASSWORD: java
-      POSTGRES_DATABASE: rest-api
     volumes:
       - ./scripts/init_tables.sql:/docker-entrypoint-initdb.d/init_tables.sql
 
