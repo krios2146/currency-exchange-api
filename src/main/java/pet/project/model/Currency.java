@@ -1,5 +1,6 @@
 package pet.project.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ public class Currency {
 
     private String code;
 
+    @JsonProperty("name")
     private String fullName;
 
     private String sign;
