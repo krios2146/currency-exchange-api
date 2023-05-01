@@ -16,9 +16,10 @@ currency to another.
 
 - JDBC
 - Java Servlets
+- PostgreSQL
+- Docker
 - Postman
 - Maven
-- Local PostgreSQL database
 
 ## Database diagram
 
