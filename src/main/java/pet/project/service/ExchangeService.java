@@ -55,17 +55,17 @@ public class ExchangeService {
      * @throws SQLException If there is an error accessing the data source.
      */
     private Optional<ExchangeRate> getExchangeRate(String baseCurrencyCode, String targetCurrencyCode) throws SQLException {
-        Optional<ExchangeRate> exchangeRateOptional = getDirectExchangeRate(baseCurrencyCode, targetCurrencyCode);
+        Optional<ExchangeRate> exchangeRate = getFromDirectExchangeRate(baseCurrencyCode, targetCurrencyCode);
 
-        if (exchangeRateOptional.isEmpty()) {
-            exchangeRateOptional = getReverseExchangeRate(baseCurrencyCode, targetCurrencyCode);
+        if (exchangeRate.isEmpty()) {
+            exchangeRate = getFromReverseExchangeRate(baseCurrencyCode, targetCurrencyCode);
         }
 
-        if (exchangeRateOptional.isEmpty()) {
-            exchangeRateOptional = getCrossExchangeRate(baseCurrencyCode, targetCurrencyCode);
+        if (exchangeRate.isEmpty()) {
+            exchangeRate = getFromCrossExchangeRate(baseCurrencyCode, targetCurrencyCode);
         }
 
-        return exchangeRateOptional;
+        return exchangeRate;
     }
 
     /**
@@ -77,7 +77,7 @@ public class ExchangeService {
      * @return An Optional of {@link ExchangeRate} object containing the exchange rate if found, or empty if not found.
      * @throws SQLException If there is an error accessing the data source.
      */
-    private Optional<ExchangeRate> getDirectExchangeRate(String baseCurrencyCode, String targetCurrencyCode) throws SQLException {
+    private Optional<ExchangeRate> getFromDirectExchangeRate(String baseCurrencyCode, String targetCurrencyCode) throws SQLException {
         return exchangeRepository.findByCodes(baseCurrencyCode, targetCurrencyCode);
     }
 
@@ -91,7 +91,7 @@ public class ExchangeService {
      * @return An Optional of {@link ExchangeRate} object containing the reverse exchange rate if found, or empty if not found.
      * @throws SQLException If there is an error accessing the data source.
      */
-    private Optional<ExchangeRate> getReverseExchangeRate(String baseCurrencyCode, String targetCurrencyCode) throws SQLException {
+    private Optional<ExchangeRate> getFromReverseExchangeRate(String baseCurrencyCode, String targetCurrencyCode) throws SQLException {
         Optional<ExchangeRate> exchangeRateOptional = exchangeRepository.findByCodes(targetCurrencyCode, baseCurrencyCode);
 
         if (exchangeRateOptional.isEmpty()) {
@@ -120,7 +120,7 @@ public class ExchangeService {
      * @return An Optional of {@link ExchangeRate} object containing the cross exchange rate if found, or empty if not found.
      * @throws SQLException If there is an error accessing the data source.
      */
-    private Optional<ExchangeRate> getCrossExchangeRate(String baseCurrencyCode, String targetCurrencyCode) throws SQLException {
+    private Optional<ExchangeRate> getFromCrossExchangeRate(String baseCurrencyCode, String targetCurrencyCode) throws SQLException {
         List<ExchangeRate> ratesWithUsdBase = exchangeRepository.findByCodesWithUsdBase(baseCurrencyCode, targetCurrencyCode);
 
         if (ratesWithUsdBase.size() != 2) {
