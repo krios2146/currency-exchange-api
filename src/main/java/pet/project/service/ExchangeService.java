@@ -12,6 +12,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static java.math.MathContext.DECIMAL64;
+import static java.math.RoundingMode.HALF_EVEN;
 
 public class ExchangeService {
     private final ExchangeRepository exchangeRepository = new JdbcExchangeRepository();
@@ -32,7 +33,7 @@ public class ExchangeService {
     public ExchangeResponse convertCurrency(String baseCurrencyCode, String targetCurrencyCode, BigDecimal amount) throws SQLException, NoSuchElementException {
         ExchangeRate exchangeRate = getExchangeRate(baseCurrencyCode, targetCurrencyCode).orElseThrow();
 
-        BigDecimal convertedAmount = amount.multiply(exchangeRate.getRate());
+        BigDecimal convertedAmount = amount.multiply(exchangeRate.getRate()).setScale(2, HALF_EVEN);
 
         return new ExchangeResponse(
                 exchangeRate.getBaseCurrency(),
@@ -123,24 +124,27 @@ public class ExchangeService {
     private Optional<ExchangeRate> getFromCrossExchangeRate(String baseCurrencyCode, String targetCurrencyCode) throws SQLException {
         List<ExchangeRate> ratesWithUsdBase = exchangeRepository.findByCodesWithUsdBase(baseCurrencyCode, targetCurrencyCode);
 
-        if (ratesWithUsdBase.size() != 2) {
-            return Optional.empty();
-        }
+        ExchangeRate usdToBaseExchange = getExchangeForCode(ratesWithUsdBase, baseCurrencyCode);
+        ExchangeRate usdToTargetExchange = getExchangeForCode(ratesWithUsdBase, targetCurrencyCode);
 
-        ExchangeRate usdToBaseExchangeRate = ratesWithUsdBase.get(0);
-        ExchangeRate usdToTargetExchangeRate = ratesWithUsdBase.get(1);
-
-        BigDecimal usdToBaseRate = usdToBaseExchangeRate.getRate();
-        BigDecimal usdToTargetRate = usdToTargetExchangeRate.getRate();
+        BigDecimal usdToBaseRate = usdToBaseExchange.getRate();
+        BigDecimal usdToTargetRate = usdToTargetExchange.getRate();
 
         BigDecimal baseToTargetRate = usdToTargetRate.divide(usdToBaseRate, DECIMAL64);
 
         ExchangeRate exchangeRate = new ExchangeRate(
-                usdToBaseExchangeRate.getTargetCurrency(),
-                usdToTargetExchangeRate.getTargetCurrency(),
+                usdToBaseExchange.getTargetCurrency(),
+                usdToTargetExchange.getTargetCurrency(),
                 baseToTargetRate
         );
 
         return Optional.of(exchangeRate);
+    }
+
+    private static ExchangeRate getExchangeForCode(List<ExchangeRate> rates, String code) {
+        return rates.stream()
+                .filter(rate -> rate.getTargetCurrency().getCode().equals(code))
+                .findFirst()
+                .orElseThrow();
     }
 }
