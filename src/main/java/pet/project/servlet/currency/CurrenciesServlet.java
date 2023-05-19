@@ -42,7 +42,7 @@ public class CurrenciesServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String name = req.getParameter("name");
         String code = req.getParameter("code");
-        String symbol = req.getParameter("symbol");
+        String sign = req.getParameter("sign");
 
         if (name == null || name.isBlank()) {
             resp.setStatus(SC_BAD_REQUEST);
@@ -60,11 +60,11 @@ public class CurrenciesServlet extends HttpServlet {
             ));
             return;
         }
-        if (symbol == null || symbol.isBlank()) {
+        if (sign == null || sign.isBlank()) {
             resp.setStatus(SC_BAD_REQUEST);
             objectMapper.writeValue(resp.getWriter(), new ErrorResponse(
                     SC_BAD_REQUEST,
-                    "Missing parameter - symbol"
+                    "Missing parameter - sign"
             ));
             return;
         }
@@ -79,7 +79,7 @@ public class CurrenciesServlet extends HttpServlet {
         }
 
         try {
-            Currency currency = new Currency(code, name, symbol);
+            Currency currency = new Currency(code, name, sign);
             Long savedCurrencyId = currencyRepository.save(currency);
             currency.setId(savedCurrencyId);
 
