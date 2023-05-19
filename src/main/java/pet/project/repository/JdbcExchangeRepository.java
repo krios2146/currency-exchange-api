@@ -69,6 +69,7 @@ public class JdbcExchangeRepository implements ExchangeRepository {
                 FROM exchange_rates er
                 JOIN currencies bc ON er.base_currency_id = bc.id
                 JOIN currencies tc ON er.target_currency_id = tc.id
+                ORDER BY er.id
             """;
 
         // @formatter:on
@@ -104,7 +105,7 @@ public class JdbcExchangeRepository implements ExchangeRepository {
             long savedId = savedExchangeRate.getLong("id");
 
             connection.commit();
-            
+
             return savedId;
         }
     }
