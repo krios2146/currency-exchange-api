@@ -32,7 +32,7 @@ public class ExchangeService {
     public ExchangeResponse convertCurrency(String baseCurrencyCode, String targetCurrencyCode, BigDecimal amount) throws SQLException, NoSuchElementException {
         ExchangeRate exchangeRate = getExchangeRate(baseCurrencyCode, targetCurrencyCode).orElseThrow();
 
-        BigDecimal convertedAmount = amount.multiply(exchangeRate.getRate());
+        BigDecimal convertedAmount = amount.multiply(exchangeRate.getRate()).setScale(2, HALF_EVEN);
 
         return new ExchangeResponse(
                 exchangeRate.getBaseCurrency(),
